@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlas Clínico Integral de Ojo Rojo - Oftalmología Avanzada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.6); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        .hotspot-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased select-none">
+
+    <header class="bg-gradient-to-r from-[#0f172a] via-[#1e293b] to-[#0f172a] text-white shadow-xl sticky top-0 z-50 border-b border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5 w-full lg:w-auto">
+                <div class="bg-emerald-500 p-2 rounded-xl text-slate-950 font-black text-center text-xs tracking-tight shadow-md flex flex-col justify-center items-center h-12 w-12 shrink-0 border border-emerald-400">
+                    <i data-lucide="microscope" class="w-6 h-6 text-slate-900"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl lg:text-2xl font-extrabold tracking-tight flex items-center gap-2 text-white">
+                        Ojo Rojo <span class="bg-emerald-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">Atlas Clínico Avanzado</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium">Basado en Kanski, BCSC (AAO) y Guías de Práctica Clínica</p>
+                </div>
+            </div>
+            
+            <nav class="flex bg-slate-900/80 p-1.5 rounded-2xl border border-slate-700 w-full lg:w-auto overflow-x-auto custom-scrollbar shadow-inner">
+                <button onclick="switchTab('explorer')" id="btn-tab-explorer" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 bg-emerald-500 text-slate-900 shadow-sm flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Explorador Clínico
+                </button>
+                <button onclick="switchTab('virtual-lab')" id="btn-tab-virtual-lab" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="beaker" class="w-3.5 h-3.5"></i> Laboratorio
+                </button>
+                <button onclick="switchTab('simulator')" id="btn-tab-simulator" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="git-merge" class="w-3.5 h-3.5"></i> Triage (Red Flags)
+                </button>
+                <button onclick="switchTab('quiz')" id="btn-tab-quiz" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i> Casos Clínicos
+                </button>
+                <button onclick="switchTab('matrix')" id="btn-tab-matrix" class="tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <i data-lucide="table-properties" class="w-3.5 h-3.5"></i> Matriz Diferencial
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full p-4 lg:p-6">
+        
+        <!-- PESTAÑA: EXPLORADOR -->
+        <section id="tab-explorer" class="tab-content grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 bg-white p-4 rounded-3xl shadow-sm border border-slate-200/80 flex flex-col h-[calc(100vh-180px)] min-h-[600px]">
+                <div class="flex items-center justify-between mb-3.5">
+                    <h2 class="text-sm font-extrabold text-slate-900 flex items-center gap-2 uppercase tracking-wide">
+                        <i data-lucide="stethoscope" class="w-4.5 h-4.5 text-emerald-600"></i>
+                        Índice de Patologías
+                    </h2>
+                    <span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">15 Entidades</span>
+                </div>
+                
+                <div class="relative mb-3">
+                    <input type="text" id="search-patologia" placeholder="Buscar por etiología, síntoma..." onkeyup="filterPatologias()" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-2.5 px-4 pl-10 text-xs font-medium focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                </div>
+                
+                <div id="patologia-list" class="flex-grow overflow-y-auto custom-scrollbar space-y-2 pr-1.5 pb-4">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+                    
+                    <div id="pathology-header" class="p-6 bg-gradient-to-br from-slate-50 to-slate-100 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="w-full">
+                            <div class="flex items-center justify-between w-full mb-2">
+                                <span id="p-urgency" class="inline-flex items-center gap-1 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                    <span id="p-urgency-text">Urgencia</span>
+                                </span>
+                                <span id="p-id" class="text-[10px] font-mono font-bold text-slate-400"></span>
+                            </div>
+                            <h3 id="p-name" class="text-2xl md:text-3xl font-black text-slate-900 leading-tight">Cargando...</h3>
+                            <p id="p-def" class="text-xs text-slate-600 mt-2 font-medium leading-relaxed max-w-3xl border-l-2 border-emerald-500 pl-3"></p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 text-slate-300 px-6 py-2.5 flex items-center justify-between flex-wrap gap-3">
+                        <div class="flex bg-slate-900 p-1 rounded-xl">
+                            <button id="btn-view-macro" onclick="setVisualView('macro')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-900 shadow-sm flex items-center gap-1.5">
+                                <i data-lucide="scan-eye" class="w-3.5 h-3.5"></i> Clínica Macro
+                            </button>
+                            <button id="btn-view-micro" onclick="setVisualView('micro')" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white flex items-center gap-1.5">
+                                <i data-lucide="microscope" class="w-3.5 h-3.5"></i> Histopatología / Lámpara
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visualizador -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-0 bg-slate-950 text-white min-h-[400px]">
+                        <div class="md:col-span-6 flex flex-col items-center justify-center relative overflow-hidden bg-black p-0 min-h-[300px]">
+                            <div id="visual-render" class="w-full h-full flex items-center justify-center relative overflow-hidden">
+                                <!-- Imagen -->
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-6 p-6 flex flex-col justify-center space-y-4 border-l border-slate-800 bg-slate-900">
+                            <div>
+                                <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest block mb-1">Hallazgos Clínicos / Patognomónicos</span>
+                                <h4 id="visual-title" class="text-base font-extrabold text-white leading-tight">Cargando...</h4>
+                                <p id="visual-desc" class="text-xs text-slate-400 mt-2.5 leading-relaxed font-medium">
+                                    Cargando descripción...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ficha Técnica -->
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 bg-white">
+                        <div class="space-y-5">
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-3 flex items-center gap-1.5 pb-2 border-b border-slate-100">
+                                    <i data-lucide="file-search" class="w-4 h-4 text-emerald-600"></i> Exploración Oftalmológica
+                                </h4>
+                                <ul class="space-y-2.5 text-xs font-semibold text-slate-600">
+                                    <li class="flex justify-between items-center"><span class="text-slate-400 font-medium">Agudeza Visual:</span><span id="p-vision" class="text-right text-slate-900 w-2/3"></span></li>
+                                    <li class="flex justify-between items-center"><span class="text-slate-400 font-medium">Reflejo Pupilar:</span><span id="p-pupila" class="text-right text-slate-900 w-2/3"></span></li>
+                                    <li class="flex justify-between items-center"><span class="text-slate-400 font-medium">Semiología Dolor:</span><span id="p-dolor" class="text-right text-slate-900 w-2/3"></span></li>
+                                    <li class="flex justify-between items-center"><span class="text-slate-400 font-medium">Latero-Evolución:</span><span id="p-curso" class="text-right text-slate-900 w-2/3"></span></li>
+                                </ul>
+                            </div>
+
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Fisiopatología y Asociaciones
+                                </h4>
+                                <p id="p-comorbilidades" class="text-[11px] text-slate-600 bg-amber-50/50 p-3.5 rounded-xl border border-amber-100/50 font-medium leading-relaxed"></p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-5">
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5 pb-2 border-b border-slate-100">
+                                    <i data-lucide="globe-2" class="w-4 h-4 text-blue-600"></i> Epidemiología Clínica (Kanski/AAO)
+                                </h4>
+                                <p id="p-epi" class="text-[11px] text-slate-600 bg-slate-50 p-3.5 rounded-xl border border-slate-100 font-medium leading-relaxed"></p>
+                            </div>
+
+                            <div>
+                                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                    <i data-lucide="pill" class="w-4 h-4 text-emerald-600"></i> Algoritmo Terapéutico
+                                </h4>
+                                <div id="p-tx" class="text-[11px] text-slate-700 bg-emerald-50/30 border border-emerald-100 p-4 rounded-xl leading-relaxed"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PESTAÑA: LABORATORIO (Oculta) -->
+        <section id="tab-virtual-lab" class="tab-content hidden max-w-4xl mx-auto space-y-6">
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200/80">
+                <div class="max-w-xl mx-auto text-center mb-8">
+                    <span class="bg-indigo-100 text-indigo-800 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Habilidades Clínicas</span>
+                    <h2 class="text-2xl font-black text-slate-900 mt-2">Pruebas de Consultorio Oftalmológico</h2>
+                    <p class="text-slate-500 text-xs mt-2 leading-relaxed">Simula procedimientos diagnósticos fundamentales en la lámpara de hendidura o consultorio general para diferenciar patologías de superficie ocular.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Prueba Fenilefrina -->
+                    <div class="border border-slate-200 rounded-2xl p-5 bg-slate-50">
+                        <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-3">
+                            <span class="bg-blue-600 text-white p-1.5 rounded-lg"><i data-lucide="eye-off" class="w-4 h-4"></i></span>
+                            <h3 class="font-black text-sm text-slate-900">Test de Fenilefrina 10%</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">
+                            Diferencia la <strong>Epiescleritis</strong> (blanquea por vasoconstricción superficial) de la <strong>Escleritis</strong> (vasos profundos dilatados e inamovibles).
+                        </p>
+                        <div class="w-full aspect-square max-w-[200px] mx-auto bg-slate-900 rounded-2xl border-4 border-slate-800 relative flex items-center justify-center overflow-hidden mb-4 shadow-inner">
+                            <div id="lab-phen-ojo" class="w-full h-full p-4 flex items-center justify-center transition-all duration-500"></div>
+                        </div>
+                        <div class="space-y-2 mt-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectPhenPatient('paciente-A')" id="btn-patient-a" class="p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center">Caso Epiescleritis</button>
+                                <button onclick="selectPhenPatient('paciente-B')" id="btn-patient-b" class="p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center">Caso Escleritis</button>
+                            </div>
+                            <button onclick="applyPhenDrop()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 mt-2 shadow-sm">
+                                <i data-lucide="droplet" class="w-3.5 h-3.5"></i> Instilar Fenilefrina
+                            </button>
+                            <div id="phen-result-text" class="p-3 rounded-xl text-[11px] font-semibold text-slate-600 border border-slate-200 bg-white min-h-[50px] flex items-center justify-center text-center">
+                                Selecciona un caso para iniciar.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prueba Fluoresceína -->
+                    <div class="border border-slate-200 rounded-2xl p-5 bg-slate-50">
+                        <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-3">
+                            <span class="bg-emerald-600 text-white p-1.5 rounded-lg"><i data-lucide="zap" class="w-4 h-4"></i></span>
+                            <h3 class="font-black text-sm text-slate-900">Tinción con Fluoresceína</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">
+                            Evalúa la integridad del epitelio corneal. Identifica úlceras (bacterianas), dendritas (herpéticas) o queratopatía punteada bajo luz azul cobalto.
+                        </p>
+                        <div class="w-full aspect-square max-w-[200px] mx-auto bg-slate-900 rounded-2xl border-4 border-slate-800 relative flex items-center justify-center overflow-hidden mb-4 shadow-inner">
+                            <div id="lab-fluor-ojo" class="w-full h-full p-4 flex items-center justify-center transition-all"></div>
+                            <div id="cobalt-layer" class="absolute inset-0 bg-blue-700/60 mix-blend-color-dodge transition-all duration-300 pointer-events-none hidden"></div>
+                        </div>
+                        <div class="space-y-2 mt-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="selectFluorCase('caso-herpes')" id="btn-fluor-herpes" class="p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center truncate">Sospecha Viral</button>
+                                <button onclick="selectFluorCase('caso-ulcera')" id="btn-fluor-ulcera" class="p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center truncate">Sospecha Infección</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <button onclick="toggleFluor()" id="btn-apply-fluor" class="w-full bg-slate-700 hover:bg-slate-800 text-white py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i data-lucide="pipette" class="w-3.5 h-3.5"></i> Fluoresceína
+                                </button>
+                                <button onclick="toggleCobalt()" id="btn-apply-cobalt" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5" disabled>
+                                    <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Cobalto
+                                </button>
+                            </div>
+                            <div id="fluor-result-text" class="p-3 rounded-xl text-[11px] font-semibold text-slate-600 border border-slate-200 bg-white min-h-[50px] flex items-center justify-center text-center">
+                                Selecciona un caso para iniciar.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- PESTAÑA: TRIAGE SIMULATOR -->
+        <section id="tab-simulator" class="tab-content hidden max-w-4xl mx-auto">
+            <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+                <div class="text-center max-w-2xl mx-auto mb-10">
+                    <span class="bg-rose-100 text-rose-800 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">Identificación de Red Flags</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-900 mt-3 leading-tight">Algoritmo de Triage de Urgencias Oftalmológicas</h2>
+                    <p class="text-slate-500 text-xs mt-3 leading-relaxed">El interrogatorio y la inspección inicial determinan el pronóstico visual. Sigue este árbol de decisiones validado para descartar emergencias que amenazan la función visual o la vida (ej. Celulitis Orbitaria, Endoftalmitis).</p>
+                </div>
+
+                <div id="tree-box" class="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 md:p-8 min-h-[350px] flex flex-col justify-between transition-all duration-300">
+                    <div id="tree-question" class="space-y-5"></div>
+                    <div id="tree-buttons" class="mt-8 flex flex-col sm:flex-row gap-3 justify-end border-t border-slate-200/60 pt-5"></div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="resetDecisionTree()" class="text-slate-500 hover:text-slate-800 text-[11px] font-bold flex items-center gap-1.5 transition-colors">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Reiniciar Algoritmo
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PESTAÑA: QUIZ -->
+        <section id="tab-quiz" class="tab-content hidden max-w-3xl mx-auto">
+            <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200/80">
+                <div class="flex flex-col sm:flex-row items-center justify-between border-b border-slate-100 pb-5 mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="clipboard-list" class="w-5 h-5 text-emerald-600"></i> Banco de Casos Clínicos
+                        </h2>
+                        <p class="text-slate-500 text-xs mt-1">Simulación tipo ENARM / Examen Profesional.</p>
+                    </div>
+                    <div class="text-right shrink-0 bg-slate-100 p-2 rounded-xl border border-slate-200">
+                        <span id="quiz-score" class="text-sm font-black text-slate-800 px-2">Puntuación: 0/0</span>
+                    </div>
+                </div>
+
+                <div id="quiz-box" class="space-y-6"></div>
+            </div>
+        </section>
+
+        <!-- PESTAÑA: MATRIZ -->
+        <section id="tab-matrix" class="tab-content hidden">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
+                <div class="p-6 border-b border-slate-100 bg-slate-900 text-white">
+                    <h2 class="text-xl font-bold flex items-center gap-2"><i data-lucide="layout-grid" class="w-5 h-5 text-emerald-400"></i> Matriz de Diagnóstico Diferencial de Ojo Rojo</h2>
+                    <p class="text-slate-400 text-xs mt-1.5">Tabla comparativa de signos cardinales de las 15 patologías oftalmológicas. Deslízate horizontalmente en pantallas pequeñas.</p>
+                </div>
+                
+                <div class="overflow-x-auto custom-scrollbar bg-slate-50">
+                    <table class="w-full text-left border-collapse min-w-[1000px]">
+                        <thead>
+                            <tr class="bg-slate-200 text-slate-600 uppercase text-[9px] tracking-widest border-b border-slate-300">
+                                <th class="p-4 font-black w-1/6">Patología</th>
+                                <th class="p-4 font-black w-1/6">Signo Cardinal</th>
+                                <th class="p-4 font-black w-1/12">Agudeza Visual</th>
+                                <th class="p-4 font-black w-1/12">Pupila</th>
+                                <th class="p-4 font-black w-1/12">Dolor</th>
+                                <th class="p-4 font-black w-1/6">Secreción / Superficie</th>
+                                <th class="p-4 font-black w-1/4">Abordaje Terapéutico (GPC)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrix-tbody" class="divide-y divide-slate-200 text-xs text-slate-700 font-medium bg-white">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-8 text-center text-xs text-slate-500 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 space-y-3">
+            <p class="font-extrabold text-slate-800 flex items-center justify-center gap-1.5 text-xs tracking-wide">
+                <span>SIMULADOR MÉDICO AVANZADO</span>
+                <span class="text-slate-300">•</span>
+                <span class="text-emerald-600">OFTALMOLOGÍA</span>
+            </p>
+            <p class="max-w-3xl mx-auto leading-relaxed text-slate-400 font-medium">
+                Plataforma interactiva diseñada para la enseñanza del pregrado clínico, médicos generales e internos de pregrado. Integra conocimientos fisiopatológicos y guías de práctica clínica internacionales.
+            </p>
+            <div class="flex justify-center flex-wrap gap-4 text-[10px] text-slate-400 pt-2 font-semibold uppercase tracking-wider">
+                <span>Ref: Oftalmología Clínica (Kanski, 8va Ed)</span>
+                <span>•</span>
+                <span>AAO BCSC Section 8</span>
+                <span>•</span>
+                <span>CENETEC Ojo Rojo</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // =========================================================================
+        // DATOS DE PATOLOGÍAS - VERSIÓN AMPLIADA (15 Patologías)
+        // Bibliografía: Kanski, Vaughan & Asbury, AAO
+        // =========================================================================
+        const patologias = [
+            {
+                id: 1,
+                name: "Hemorragia Subconjuntival",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Subconjunctival_hemorrhage.jpg/800px-Subconjunctival_hemorrhage.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Subconjunctival_hemorrhage_-_histopathology.jpg/800px-Subconjunctival_hemorrhage_-_histopathology.jpg",
+                definition: "Extravasación aguda de sangre en el espacio virtual delimitado entre la conjuntiva bulbar anterior y la esclerótica superficial, debido a la rotura espontánea o traumática de capilares frágiles.",
+                epi: "Constituye hasta el 3% de consultas de urgencia. Asociada a maniobras de Valsalva (tos, vómito, esfuerzo), crisis hipertensiva transitoria, trauma ocular leve, o uso de antitrombóticos (aspirina, clopidogrel).",
+                vision: "Conservada intacta (20/20)",
+                pupila: "Isocórica, normorreactiva",
+                dolor: "Asintomático (leve pesadez urente ocasional)",
+                laterality: "Unilateral (90%), autolimitada (reabsorción en 1-3 semanas)",
+                comorbilidades: "Hipertensión arterial sistémica mal controlada, discrasias sanguíneas, tos ferina en pediatría, frotamiento vigoroso crónico.",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Manejo Expectante (Regla de Oro):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Tranquilización:</strong> Explicar el curso natural benigno (cambios cromáticos de la sangre: rojo a amarillo).</li>
+                        <li><strong>Lágrimas artificiales:</strong> (Ej. Hialuronato de sodio 0.4%) PRN para lubricar si hay elevación mecánica de la conjuntiva por el coágulo.</li>
+                        <li><strong>Abordaje Sistémico:</strong> Medir tensión arterial en el momento de la consulta. Solicitar perfil de coagulación solo si son recurrentes o bilaterales sin causa traumática.</li>
+                    </ul>
+                `,
+                macroTitle: "Placa hemática sectorial homogénea",
+                macroDesc: "Colección de sangre de color rojo escarlata brillante, bien delimitada. Clásicamente oculta los vasos esclerales subyacentes y detiene su avance exactamente en el limbo esclerocorneal, sin invadir córnea.",
+                microTitle: "Eritrocitos en estroma laxo sin inflamación",
+                microDesc: "La histología revela glóbulos rojos maduros (eritrocitos) diseminados libremente por el tejido conectivo laxo subepitelial de la conjuntiva, con ausencia total de polimorfonucleares o tejido necrótico."
+            },
+            {
+                id: 2,
+                name: "Conjuntivitis Viral (Queratoconjuntivitis Epidémica)",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Conjunctivitis.jpg/800px-Conjunctivitis.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Adenovirus_virions_EM.jpg/800px-Adenovirus_virions_EM.jpg",
+                definition: "Inflamación aguda, difusa y altamente contagiosa de la conjuntiva, mediada principalmente por la familia Adenoviridae (serotipos 8, 19, 37 producen la variante epidémica).",
+                epi: "Es la causa más frecuente de ojo rojo infeccioso en adultos. Período de incubación de 5 a 12 días. Se transmite vía fecal-oral, gotitas respiratorias o contacto directo (fómites, instrumental médico mal esterilizado).",
+                vision: "Normal o borrosidad transitoria por lagrimeo",
+                pupila: "Isocórica, normorreactiva",
+                dolor: "Ardor, sensación de arenilla (cuerpo extraño). Sin dolor profundo.",
+                laterality: "Inicia unilateral, contagia al ojo contralateral en 48-72 hrs (el 2do ojo suele ser menos severo).",
+                comorbilidades: "Asociación frecuente con Infección de Vías Respiratorias Altas (IVRA), linfadenopatía preauricular dolorosa (signo de Parinaud) y fiebre faringoconjuntival (Adenovirus 3 y 7).",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Manejo de Soporte y Prevención Epidemiológica:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Medidas Físicas:</strong> Compresas frías locales cada 6 horas para mitigar el edema y prurito.</li>
+                        <li><strong>Lubricación:</strong> Lágrimas artificiales sin conservadores a libre demanda.</li>
+                        <li><strong>Control de Infección:</strong> Aislamiento de contacto estricto (no compartir toallas, fundas, lavado de manos exhaustivo). Evitar el uso escolar/laboral por 7-10 días.</li>
+                        <li><strong>Corticoides tópicos:</strong> Reservados EXCLUSIVAMENTE para especialista si se desarrollan membranas o infiltrados subepiteliales que resten visión.</li>
+                    </ul>
+                `,
+                macroTitle: "Reacción folicular y quemosis conjuntival",
+                macroDesc: "Hiperemia difusa, lagrimeo acuoso abundante (epífora), quemosis leve a moderada. La eversión del párpado inferior revela hipertrofia linfoide (folículos) de aspecto translúcido.",
+                microTitle: "Infiltrado mononuclear e hiperplasia linfoide",
+                microDesc: "Estroma conjuntival engrosado con abundantes linfocitos y macrófagos agregados en centros germinales (folículos). En fases tardías pueden observarse inclusiones intranucleares virales bajo microscopía electrónica."
+            },
+            {
+                id: 3,
+                name: "Queratitis Bacteriana (Úlcera Corneal)",
+                urgency: "Crítico",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Corneal_ulcer.jpg/800px-Corneal_ulcer.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Staphylococcus_aureus%2C_50%2C000x%2C_USDA%2C_ARS%2C_EMU.jpg/800px-Staphylococcus_aureus%2C_50%2C000x%2C_USDA%2C_ARS%2C_EMU.jpg",
+                definition: "Infección supurativa y destructiva grave del estroma corneal, que provoca necrosis tisular acelerada. Considerada una verdadera emergencia oftalmológica por riesgo de perforación y endoftalmitis.",
+                epi: "Alta asociación al uso prolongado, inapropiado o higiene deficiente de **Lentes de Contacto** (Pseudomonas aeruginosa). Otras bacterias: Staphylococcus aureus y Streptococcus pneumoniae (asociado a trauma con materia vegetal o enfermedad de superficie ocular).",
+                vision: "Disminuida moderada a severa (depende de la localización respecto al eje visual).",
+                pupila: "Miosis reactiva (espasmo del cuerpo ciliar por dolor).",
+                dolor: "Dolor punzante intenso, fotofobia extrema, blefaroespasmo severo.",
+                laterality: "Casi siempre unilateral.",
+                comorbilidades: "Uso de Lentes de Contacto (LC), trauma corneal abrasivo previo, uso crónico de corticoides tópicos, Queratopatía Bullosa, Ojo Seco severo (Sx de Sjögren).",
+                tratamiento: `
+                    <p class="font-bold text-rose-700 mb-1">Emergencia (Derivación Inmediata):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Toma de Muestra:</strong> Raspado corneal para frotis (Gram/Giemsa) y cultivos (Agar Sangre, Chocolate) ANTES de iniciar antibióticos.</li>
+                        <li><strong>Terapia de Choque Empírica:</strong> Colirios fortificados preparados en farmacia (Ej. Vancomicina 50mg/ml + Ceftazidima o Tobramicina 14mg/ml) instilados cada hora, día y noche. O Fluoroquinolonas de 4ta Gen (Moxifloxacino) en lesiones pequeñas periféricas.</li>
+                        <li><strong>Manejo de dolor:</strong> Ciclopléjicos (Atropina 1%) para frenar el espasmo ciliar y evitar sinequias. Prohibido parchar el ojo infectado.</li>
+                    </ul>
+                `,
+                macroTitle: "Infiltrado estromal blanquecino e hipopión",
+                macroDesc: "Defecto epitelial que tiñe con fluoresceína sobre un infiltrado estromal opaco (amarillo-blanco). Intensa inyección ciliar (perilimbar). Con frecuencia el proceso inflamatorio desencadena la acumulación de pus estéril en cámara anterior (Hipopión).",
+                microTitle: "Necrosis estromal y polimorfonucleares",
+                microDesc: "Pérdida focal del epitelio escamoso estratificado anterior. El estroma corneal adyacente muestra desestructuración de las lamelas de colágeno e infiltración masiva por neutrófilos, edema y vasos de neoformación si es crónico."
+            },
+            {
+                id: 4,
+                name: "Glaucoma Agudo de Ángulo Cerrado",
+                urgency: "Crítico",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Acute_angle_closure_glaucoma.jpg/800px-Acute_angle_closure_glaucoma.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Glaucomatous_cupping.jpg/800px-Glaucomatous_cupping.jpg",
+                definition: "Pico hipertensivo ocular súbito (PIO > 40-60 mmHg) secundario al bloqueo mecánico del flujo de humor acuoso a través de la pupila (bloqueo pupilar) y consecuente cierre de la malla trabecular por aposición del iris periférico.",
+                epi: "Más frecuente en mujeres (4:1), pacientes asiáticos y esquimales. Edad >60 años. Ojos anatómicamente predispuestos: cortos (hipermetropía) con cámara anterior estrecha. Desencadenado a menudo en la penumbra (midriasis fisiológica).",
+                vision: "Disminución profunda con percepción clásica de halos coloreados alrededor de las luces (por edema corneal).",
+                pupila: "Midriasis media arreactiva (pupila ovalada y paralizada por isquemia del esfínter).",
+                dolor: "Dolor orbitario unilateral fulminante y atroz, irradiado al territorio del trigémino. Cursa con náuseas y vómito en escopetazo (falsa urgencia abdominal).",
+                laterality: "Unilateral en el ataque; riesgo inminente en el contralateral.",
+                comorbilidades: "Hipermetropía alta, catarata intumescente (faco-mórfico). Consumo reciente de fármacos con efecto anticolinérgico/simpaticomimético (antidepresivos tricíclicos, antihistamínicos, broncodilatadores, topiramato).",
+                tratamiento: `
+                    <p class="font-bold text-rose-700 mb-1">Manejo Urgente Hipotensor Intravenoso y Tópico:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Primera línea sistémica:</strong> Manitol 20% IV (1-2 g/kg) en infusión rápida o Acetazolamida 500 mg VO/IV para reducir la secreción de acuoso y deshidratar el vítreo.</li>
+                        <li><strong>Bloqueo tópico (Tetra-terapia):</strong> Timolol 0.5% + Brimonidina 0.2% + Dorzolamida 2% (una gota de cada uno c/15 mins por una hora).</li>
+                        <li><strong>Mióticos:</strong> Pilocarpina 2% instilada *después* de que la PIO baje de 40 mmHg (antes el músculo esfínter del iris está isquémico y no responde).</li>
+                        <li><strong>Tratamiento Definitivo:</strong> Iridotomía Periférica con Láser Nd:YAG bilateral (curativo y profiláctico).</li>
+                    </ul>
+                `,
+                macroTitle: "Inyección ciliar, córnea esmerilada y pupila paralizada",
+                macroDesc: "Córnea de aspecto grisáceo y opaco (edema epitelial bulloso por hipertensión masiva), borramiento de los detalles del iris, cámara anterior extraordinariamente estrecha y pupila fija en midriasis media.",
+                microTitle: "Cierre angular y edema hidrópico de córnea",
+                microDesc: "Aposición de la raíz del iris contra la malla trabecular corneal posterior (cierre del seno camerular). Edema masivo con formación de vacuolas en el epitelio corneal anterior e isquemia del nervio óptico."
+            },
+            {
+                id: 5,
+                name: "Uveítis Anterior Aguda (Iridociclitis)",
+                urgency: "Alto",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Anterior_uveitis_%28Hypopyon%29.jpg/800px-Anterior_uveitis_%28Hypopyon%29.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Uveitis_histopathology.jpg/800px-Uveitis_histopathology.jpg",
+                definition: "Inflamación inmunomediada del tracto uveal anterior (iris y pars plicata del cuerpo ciliar) que genera extravasación de proteínas y células inflamatorias hacia la cámara anterior.",
+                epi: "Afecta principalmente a adultos jóvenes (20-50 años). Fuerte asociación al fenotipo genético **HLA-B27** (hasta el 50% de las uveítis anteriores agudas idiopáticas).",
+                vision: "Leve a severamente borrosa.",
+                pupila: "Miosis (por espasmo iridiano) e irregularidad (pupila lobulada) debido a Sinequias Posteriores (adhesión del iris inflamado al cristalino).",
+                dolor: "Sordo, pulsátil y constante en el globo ocular, con extrema fotofobia e inyección periquerática violácea.",
+                laterality: "Frecuentemente unilateral, pero con cuadros recurrentes alternantes.",
+                comorbilidades: "Espondiloartropatías seronegativas: Espondilitis Anquilosante, Artritis Reactiva (Síndrome de Reiter), Artritis Psoriásica, Enfermedad Inflamatoria Intestinal, Artritis Idiopática Juvenil (asintomática, ANA+).",
+                tratamiento: `
+                    <p class="font-bold text-amber-700 mb-1">Control Inflamatorio en Oftalmología:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Supresión Esteroidea:</strong> Acetato de Prednisolona 1% tópico, inicial cada 1-2 horas en pauta descendente lenta por semanas. Reduce el brote agudo.</li>
+                        <li><strong>Prevención de Sinequias:</strong> Midriáticos/Ciclopléjicos (Ciclopentolato 1% o Atropina 1%) para romper adhesiones y calmar el dolor espástico del músculo ciliar.</li>
+                        <li><strong>Abordaje Sistémico:</strong> Solicitar laboratorios (HLA-B27, Factor Reumatoide, VSG, Rx de articulaciones sacroilíacas) si es recurrente o bilateral.</li>
+                    </ul>
+                `,
+                macroTitle: "Inyección ciliar, miosis y sinequias posteriores",
+                macroDesc: "Hiperemia concentrada alrededor del limbo (inyección ciliar). Pupila en miosis con deformidad en 'hoja de trébol' por adhesiones. En la lámpara de hendidura se observa el signo patognomónico de 'Fenómeno de Tyndall' (células y proteínas flotando en humor acuoso) y precipitados retroqueráticos.",
+                microTitle: "Infiltrado linfoplasmocitario uveal",
+                microDesc: "Estroma del iris marcadamente engrosado por infiltración de células mononucleares (linfocitos, macrófagos) y depósito de complejos inmunes. Exudado fibrinoso llenando el ángulo camerular."
+            },
+            {
+                id: 6,
+                name: "Endoftalmitis Aguda Infecciosa",
+                urgency: "Crítico",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Endophthalmitis.jpg/800px-Endophthalmitis.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Uveitis_histopathology.jpg/800px-Uveitis_histopathology.jpg", // Placeholder micro as generic severe infl
+                definition: "Infección bacteriana o fúngica purulenta masiva y devastadora que afecta las cavidades y fluidos internos del globo ocular (humor acuoso y vítreo), poniendo en grave riesgo la viabilidad del órgano.",
+                epi: "La causa más frecuente es la **postquirúrgica exógena** (ej. tras cirugía de catarata, incidencia 0.1%), seguida del traumatismo ocular penetrante y la endógena (siembra bacteriémica en inmunodeprimidos). Gérmenes: Staphylococcus epidermidis (más común post-Qx), S. aureus, Streptococcus sp.",
+                vision: "Disminución profunda y súbita, usualmente visión de cuenta-dedos o percepción de luz.",
+                pupila: "Pobremente reactiva o no valorable por exudados/fibrina.",
+                dolor: "Dolor ocular agudo, pulsátil y progresivo (ausente en formas crónicas leves, pero muy severo en aguda bacteriana).",
+                laterality: "Unilateral (salvo endógenas sistémicas).",
+                comorbilidades: "Post-operatorio oftalmológico reciente (2 a 7 días previos), trauma con cuerpo extraño intraocular, catéteres intravenosos crónicos, endocarditis (siembra hematógena).",
+                tratamiento: `
+                    <p class="font-bold text-rose-700 mb-1">Manejo Intravítreo Urgente (Minutos/Horas):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Inyección Intravítrea Empírica:</strong> Punción de pars plana para obtener muestra (cultivo vítreo) seguido inmediatamente de inyección de antibióticos (Vancomicina 1mg + Ceftazidima 2.25mg) directamente al interior del ojo.</li>
+                        <li><strong>Vitrectomía vía Pars Plana:</strong> Indicada tempranamente en pacientes con agudeza visual de sólo Percepción de Luz (Estudio EVS).</li>
+                        <li><strong>Corticoides:</strong> Frecuentemente inyectados (Dexametasona intravítrea) concomitante para reducir destrucción tisular masiva.</li>
+                    </ul>
+                `,
+                macroTitle: "Pérdida del reflejo rojo, hipopión masivo y vitritis",
+                macroDesc: "Inyección conjuntival severa y quemosis, edema corneal acentuado, cámara anterior ocupada por abundante material purulento (hipopión franco) y ausencia de fulgor pupilar debido al humor vítreo convertido en un absceso (vitritis).",
+                microTitle: "Absceso vítreo y destrucción retiniana",
+                microDesc: "Infiltración fulminante de neutrófilos, restos necróticos bacterianos y mallas de fibrina destruyendo la arquitectura de la retina neurosensorial y llenando la cavidad vítrea."
+            },
+            {
+                id: 7,
+                name: "Celulitis Orbitaria",
+                urgency: "Crítico",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orbital_cellulitis.jpg/800px-Orbital_cellulitis.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Staphylococcus_aureus%2C_50%2C000x%2C_USDA%2C_ARS%2C_EMU.jpg/800px-Staphylococcus_aureus%2C_50%2C000x%2C_USDA%2C_ARS%2C_EMU.jpg", // Placeholder micro
+                definition: "Infección aguda bacteriana diseminada al tejido adiposo y músculo extraocular ubicados **detrás** del septum orbitario. Urgencia médica vital por riesgo de trombosis del seno cavernoso, meningitis y ceguera.",
+                epi: "Alta incidencia en pacientes pediátricos. La causa número uno es la diseminación directa de una sinusitis etmoidal adyacente (90% de los casos). Patógenos: S. pneumoniae, H. influenzae, S. aureus, Anaerobios.",
+                vision: "Normal o disminuida por compresión del nervio óptico (DPA positivo).",
+                pupila: "Puede haber Defecto Pupilar Aferente (Signo de alarma neurológica).",
+                dolor: "Dolor orbitario sordo, exacerbado drásticamente con los movimientos oculares.",
+                laterality: "Unilateral.",
+                comorbilidades: "Infección de vías respiratorias y rinosinusitis aguda previa, trauma penetrante orbitario, infección dental maxilar.",
+                tratamiento: `
+                    <p class="font-bold text-rose-700 mb-1">Ingreso Hospitalario y Abordaje Multidisciplinar:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Antibioticoterapia IV de Amplio Espectro:</strong> Ceftriaxona + Vancomicina o Clindamicina en esquema hospitalario por 10-14 días.</li>
+                        <li><strong>Neuroimagen Obligatoria:</strong> Tomografía Computarizada (TC) de órbitas y senos paranasales urgente con contraste para descartar absceso subperióstico o extensión craneal.</li>
+                        <li><strong>Drenaje Quirúrgico:</strong> Por Otorrinolaringología (ORL) u Oftalmología si el absceso es mayor a 1cm, no mejora en 48h, o hay afección del nervio óptico.</li>
+                    </ul>
+                `,
+                macroTitle: "Proptosis, oftalmoplejía dolorosa y edema palpebral",
+                macroDesc: "Edema severo y eritema palpebral (a diferencia de la preseptal, el ojo *sí* está involucrado). Se aprecia ojo rojo difuso con quemosis bulbar masiva, desplazamiento anterior del globo (exoftalmos/proptosis) y restricción severa de la motilidad.",
+                microTitle: "Infiltración supurativa en grasa retrobulbar",
+                microDesc: "Inflamación aguda, trombosis venosa y microabscesos que penetran e infiltran el tejido adiposo orbitario y la fascia de los músculos extraoculares."
+            },
+            {
+                id: 8,
+                name: "Pterigión (Inflamado)",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Pterygium_1.jpg/800px-Pterygium_1.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Eosinophil_-_blood_smear.jpg/800px-Eosinophil_-_blood_smear.jpg", // generic tissue response
+                definition: "Degeneración fibrovascular elastótica proliferativa del tejido conjuntival bulbar, que invade en forma de cuña el epitelio y estroma superficial de la córnea.",
+                epi: "Extremadamente prevalente en zonas tropicales y ecuatoriales (alta radiación ultravioleta). Afecta predominantemente a trabajadores agrícolas, pescadores o albañiles (exposición crónica al sol, viento, polvo y resequedad).",
+                vision: "Normal; Astigmatismo inducido si invade el eje visual (astigmatismo irregular a favor de la regla).",
+                pupila: "Normal.",
+                dolor: "Generalmente asintomático. Causa molestia, ardor leve y sensación de cuerpo extraño cuando se inflama.",
+                laterality: "Unilateral o bilateral asimétrico (clásicamente nasal, rara vez temporal).",
+                comorbilidades: "Pingüécula previa, ojo seco crónico evaporativo, queratopatía climática por exposición a rayos UV.",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Manejo Clínico y Quirúrgico (Electivo):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Manejo Médico Inicial:</strong> Protección UV (gafas de sol) mandatoria y permanente. Gotas lubricantes a libre demanda para mitigar el roce. Si hay inflamación moderada, curso corto (5 días) de AINEs o corticoides tópicos débiles (Fluorometolona).</li>
+                        <li><strong>Cirugía Resectiva (Plastia):</strong> Escisión con autoinjerto conjuntival límbico. Indicado sólo si invade el eje visual (>3mm de la córnea), induce alto astigmatismo, o por disconformidad estética severa. Riesgo de recidiva si se usa solo técnica de esclera desnuda.</li>
+                    </ul>
+                `,
+                macroTitle: "Masa fibrovascular carnosa invasora",
+                macroDesc: "Crecimiento de tejido elevado de forma triangular de vértice apuntando hacia el centro de la córnea. La cabeza del pterigión suele presentar un infiltrado grisáceo de hierro férrico periférico (Línea de Stocker). Si está activo, presenta ingurgitación vascular roja marcada.",
+                microTitle: "Degeneración elastótica del colágeno",
+                microDesc: "Epitelio conjuntival displásico subyacente a un estroma fibroso con degeneración de fibras elásticas (tejido basófilo en Kossa) y vasos sanguíneos de neoformación engrosados y aberrantes."
+            },
+            {
+                id: 9,
+                name: "Queratoconjuntivitis Sicca (Ojo Seco Severo)",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Allergic_conjunctivitis_%28cropped%29.jpg/800px-Allergic_conjunctivitis_%28cropped%29.jpg", // Using red eye base
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Sclera_and_episclera.jpg/800px-Sclera_and_episclera.jpg",
+                definition: "Enfermedad multifactorial de la superficie ocular caracterizada por la pérdida de homeostasis de la película lagrimal, acompañada de hiperosmolaridad, neurosensibilidad e inflamación de la superficie ocular.",
+                epi: "Prevalencia en aumento global, especialmente en mujeres postmenopáusicas y usuarios crónicos de pantallas (parpadeo reducido). Se divide en ojo seco acuodeficiente (Síndrome de Sjögren o No Sjögren) y evaporativo (Disfunción de Glándulas de Meibomio).",
+                vision: "Borrosidad fluctuante, que mejora característicamente tras un parpadeo.",
+                pupila: "Normal.",
+                dolor: "Sensación constante de arenilla, ardor y fatiga visual, que paradójicamente cursa con episodios de lagrimeo reflejo excesivo.",
+                laterality: "Bilateral.",
+                comorbilidades: "Enfermedades reumatológicas (Sx de Sjögren, Artritis Reumatoide), uso de isotretinoína, betabloqueadores orales, o disfunción de glándulas de Meibomio (rosácea facial).",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Manejo Escalonado GPC (TFOS DEWS II):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Paso 1:</strong> Higiene palpebral, compresas calientes, modificación ambiental (humidificadores) y lágrimas artificiales viscosas libres de conservantes (Hialuronato 0.4%, Trehalosa).</li>
+                        <li><strong>Paso 2:</strong> Inmunomoduladores tópicos (Ciclosporina A al 0.05% - Restasis, o Tacrolimus) a largo plazo para controlar la inflamación y tapones de punto lagrimal transitorios de silicón.</li>
+                        <li><strong>Paso 3:</strong> Suero autólogo tópico o lentes de contacto esclerales en casos de sequedad refractaria severa (Queratitis filamentosa).</li>
+                    </ul>
+                `,
+                macroTitle: "Menisco lagrimal disminuido e hiperemia interpalpebral",
+                macroDesc: "Hiperemia conjuntival de predominio en la zona expuesta del ecuador (hendidura interpalpebral). La córnea presenta Queratopatía Punteada Superficial que tiñe positiva a verde de lisamina o rosa de bengala. Puede haber filamentos mucosos adheridos.",
+                microTitle: "Metaplasia escamosa y pérdida caliciforme",
+                microDesc: "Estudios de citología de impresión muestran pérdida marcada de células caliciformes productoras de mucina y estratificación queratinizante del epitelio escamoso conjuntival mediada por citoquinas proinflamatorias."
+            },
+            {
+                id: 10,
+                name: "Epiescleritis",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Episcleritis_of_the_right_eye.jpg/800px-Episcleritis_of_the_right_eye.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Sclera_and_episclera.jpg/800px-Sclera_and_episclera.jpg",
+                definition: "Inflamación vascular superficial, abrupta y focal del tejido epiescleral (capa entre conjuntiva y esclera). Autolimitada y benigna.",
+                epi: "Afecta más a mujeres adultas jóvenes. Un 70% son idiopáticas. Suelen ser recurrentes. Se subdivide morfológicamente en variante simple (75%) y nodular (25%).",
+                vision: "Normal.",
+                pupila: "Normal.",
+                dolor: "Leve disconfort, sensación de calor o escozor focal. El ojo duele a la palpación localizada del sector inflamado.",
+                laterality: "Unilateral comúnmente.",
+                comorbilidades: "Estrés agudo, fatiga. Si hay recurrencias o nodularidad marcada, un 30% se asocia a trastornos sistémicos (Artritis Reumatoide, Lupus, Enfermedad de Lyme o Sífilis).",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Tratamiento Sintomático (Manejo Escalonado):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Conservador:</strong> Lubricantes fríos en colirio y compresas locales frías para inducir constricción vascular pasiva (suele ser suficiente).</li>
+                        <li><strong>Farmacológico Tópico:</strong> AINEs oftálmicos (Diclofenaco o Ketorolaco al 0.5% cada 6h).</li>
+                        <li><strong>Resistentes:</strong> AINEs orales sistémicos (Flurbiprofeno o Ibuprofeno) en casos nodulares que tardan semanas en remitir.</li>
+                        <li><strong>Diagnóstico diferencial:</strong> Gota diagnóstica de Fenilefrina 10% blanquea totalmente el enrojecimiento.</li>
+                    </ul>
+                `,
+                macroTitle: "Inyección radial sectorial y episclera engrosada",
+                macroDesc: "Enrojecimiento franco, a menudo en un triángulo delimitado con base en el fórnix y vértice hacia el limbo (sin invadirlo). Los vasos tienen trayectos rectos, radiales, que se movilizan libremente con un hisopo sobre la esclera blanca y fija inferior.",
+                microTitle: "Congestión capilar de plexos superficiales",
+                microDesc: "Intensa vasodilatación linfática y venosa en el tejido conectivo laxo de Tenon y epiesclera anterior, con escasa infiltración intersticial linfocitaria perivascular."
+            },
+            {
+                id: 11,
+                name: "Escleritis Anterior",
+                urgency: "Alto",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Scleritis.jpg/800px-Scleritis.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Rheumatoid_nodule.jpg/800px-Rheumatoid_nodule.jpg",
+                definition: "Inflamación profunda, grave y destructiva del colágeno primario que compone la esclerótica (la capa fibrosa protectora del globo). Forma parte del espectro de vasculitis sistémicas autoinmunes.",
+                epi: "Rara (2-3 casos por 100,000 hab). Pacientes entre 40 y 60 años, mujeres 67%. La forma necrotizante con inflamación es la más letal oftalmológicamente. La Escleromalacia Perforante (necrotizante *sin* inflamación) es exclusiva de Artritis Reumatoide de larga data.",
+                vision: "Disminución moderada si la inflamación se propaga anterior (uveítis secundaria) o posterior (edema macular).",
+                pupila: "Normal o en miosis reaccional a inflamación vecina.",
+                dolor: "El dolor es el síntoma cardinal: Atroz, taladrante, que irradia a mandíbula y ceja, que **despierta al paciente por la noche** y no cede a analgésicos comunes.",
+                laterality: "Unilateral inicialmente, bilateral en un 40%.",
+                comorbilidades: "Hasta el 50% tiene una enfermedad de tejido conectivo letal subyacente: Artritis Reumatoide (número 1), Granulomatosis con Poliangeítis (Wegener), Poliarteritis Nodosa (PAN), Lupus Eritematoso Sistémico.",
+                tratamiento: `
+                    <p class="font-bold text-amber-700 mb-1">Supresión Autoinmune Urgente (Equipo Multidisciplinario):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Primera Línea (No Necrotizante):</strong> AINEs orales a dosis altas constantes (Ej. Indometacina 75mg bid) y esteroides tópicos como adyuvante para vasculatura superficial.</li>
+                        <li><strong>Segunda Línea (Necrotizante/Refractaria):</strong> Prednisona sistémica oral a 1mg/kg/día o megadosis intravenosa de metilprednisolona en el ataque agudo.</li>
+                        <li><strong>Manejo de Fondo:</strong> Agentes ahorradores de esteroides (Metotrexato, Micofenolato Mofetilo) o biológicos (Infliximab, Rituximab) prescritos por Reumatología.</li>
+                        <li><strong>Contraindicado:</strong> Inyección periocular de esteroides (riesgo de perforación) y Fenilefrina 10% no blanquea los vasos afectados.</li>
+                    </ul>
+                `,
+                macroTitle: "Coloración azul-violácea y patrón vascular entrelazado",
+                macroDesc: "Hiperemia de tono púrpura o azulada profunda bajo luz natural. Vasos gruesos, tortuosos y entrecruzados que no se movilizan con hisopo de algodón. En fases necrotizantes, la destrucción de esclera deja ver el pigmento uveal oscuro debajo (adelgazamiento negro-azulado en la parte blanca del ojo).",
+                microTitle: "Vasculitis necrotizante y fibrinoide",
+                microDesc: "Desecación del estroma denso acelular colágeno de la esclera. Granulomas con necrosis fibrinoide central envueltos por células epitelioides multinucleadas plasmáticas."
+            },
+            {
+                id: 12,
+                name: "Conjuntivitis Bacteriana Aguda",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Bacterial_conjunctivitis_%28cropped%29.jpg/800px-Bacterial_conjunctivitis_%28cropped%29.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Staphylococcus_aureus%2C_50%2C000x%2C_USDA%2C_ARS%2C_EMU.jpg/800px-Staphylococcus_aureus%2C_50%2C000x%2C_USDA%2C_ARS%2C_EMU.jpg",
+                definition: "Inflamación purulenta de la conjuntiva de instauración rápida mediada por microorganismos piógenos comunes. En adultos la infección principal es S. aureus, en niños predomina H. influenzae y S. pneumoniae.",
+                epi: "Alta tasa en pediatría y población geriátrica. Es la causa del 50-75% de las conjuntivitis en niños. A menudo autolimitada en el transcurso de 1 a 2 semanas en individuos sanos.",
+                vision: "Conservada, con desenfoque temporal superable parpadeando (debido a las hebras de moco).",
+                pupila: "Normal.",
+                dolor: "No duele. Se presenta como pesadez palpebral, ardor leve y fotofobia mínima.",
+                laterality: "Típicamente unilateral con involucro del ojo compañero a los 2-3 días.",
+                comorbilidades: "Obstrucción del conducto nasolagrimal infantil (Dacriostenosis), rosácea, blefaritis escamosa, dacriocistitis o antecedente de cuerpo extraño.",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Manejo Empírico de Primera Línea GPC:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Terapia Antibiótica Tópica:</strong> Colirios de espectro ampliado (Tobramicina 0.3%, Ciprofloxacino o Moxifloxacino) aplicados 1 gota cada 4 a 6 horas por 7 días.</li>
+                        <li><strong>Ungüentos:</strong> Cloranfenicol o Eritromicina ungüento oftalmico en las noches antes de dormir (aumenta el tiempo de exposición y evita adherencia palpebral).</li>
+                        <li><strong>Aseo:</strong> Fundamental el lavado mecánico y frecuente con compresas o toallas desechables de agua hervida tibia para retirar las secreciones biopelículas de los márgenes.</li>
+                    </ul>
+                `,
+                macroTitle: "Exudado purulento viscoso espeso y costras",
+                macroDesc: "Inyección conjuntival intensa de fórnices y tarsos que palidece hacia el limbo. Secreción abundante opaca (amarillo/verde verdosa) que reformula constantemente tras limpiarse y amanece aglutinando los párpados impidiendo su apertura en la mañana.",
+                microTitle: "Exudado polimorfonuclear y edema vascular",
+                microDesc: "Erosión superficial de células epiteliales caliciformes, ingurgitación venular, y una respuesta inmune innata masiva caracterizada por leucocitos polimorfonucleares engullendo colonias cocobacilares."
+            },
+            {
+                id: 13,
+                name: "Queratitis Punteada Superficial (Herpética)",
+                urgency: "Alto",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Herpes_simplex_keratitis.jpg/800px-Herpes_simplex_keratitis.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Herpes_simplex_keratitis_-_histopathology.jpg/800px-Herpes_simplex_keratitis_-_histopathology.jpg",
+                definition: "Inflamación aguda del epitelio y estroma anterior de la córnea debida a la replicación focal de virus neurotrópicos, más comúnmente el Virus Herpes Simple Tipo 1 (HSV-1).",
+                epi: "Afecta al menos 1 millón de casos anuales a nivel global. Tras una infección primaria en niñez, el virus viaja retrógradamente al Ganglio del Trigémino donde queda latente y se reactiva por fiebre, UV, inmunodepresión o estrés.",
+                vision: "Disminución variable dependiendo de qué tan cerca esté la dendrita o la cicatriz del eje visual central pupilar.",
+                pupila: "Miosis leve, reactiva.",
+                dolor: "Dolor corneal irritativo intenso o, paradójicamente, ausencia de dolor debido a hipoestesia corneal (el virus anestesia las terminaciones del trigémino V1 en infecciones recurrentes).",
+                laterality: "Unilateral (98%).",
+                comorbilidades: "Estado de inmunosupresión (VIH, Quimioterapia), episodios repetitivos previos de herpes labial, episodios atópicos severos.",
+                tratamiento: `
+                    <p class="font-bold text-amber-700 mb-1">Manejo Antiviral Selectivo:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Antiviral Tópico u Oral:</strong> Aciclovir pomada oftálmica 3% (cada 4h por 10 días), o Ganciclovir gel 0.15% (5 veces al día). Alternativamente Aciclovir oral 400 mg c/5h.</li>
+                        <li><strong>Regla de Oro:</strong> ESTRICTA PROHIBICIÓN de instilar Corticoides Tópicos de forma inadvertida si el epitelio está ulcerado. Un corticoide descontrolará la replicación y creará una inmensa y destructiva 'Úlcera Geográfica' con riesgo de ceguera perforante.</li>
+                        <li><strong>Debridación:</strong> Suave retiro del epitelio dendrítico con hisopo en consultorio reduce la carga viral replicativa.</li>
+                    </ul>
+                `,
+                macroTitle: "Lesión epitelial dendrítica clásica en helecho",
+                macroDesc: "Inyección ciliar (anillo periquerático rojo). Tras aplicar fluoresceína, bajo luz de cobalto brilla intensamente una úlcera epitelial con patrón arboriforme, de ramificación lineal, que tiene bulbos terminales redondeados cargados de virus.",
+                microTitle: "Erosión basocelular y sincitios virales",
+                microDesc: "Focos de lisis en el epitelio escamoso estratificado anterior corneal con bordes epiteliales edematosos donde las células están repletas de inclusiones intracelulares hialinas."
+            },
+            {
+                id: 14,
+                name: "Conjuntivitis por Inclusión (Chlamydia)",
+                urgency: "Medio",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Trachoma.jpg/800px-Trachoma.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Chlamydia_trachomatis_inclusion_bodies.jpg/800px-Chlamydia_trachomatis_inclusion_bodies.jpg",
+                definition: "Enfermedad infecciosa ocular tórpida causada por los serotipos D a K de *Chlamydia trachomatis* (Bacteria intracelular obligada). Constituye una ETS de expresión oftalmológica (Conjuntivitis Paratracomatosa).",
+                epi: "Alta prevalencia en jóvenes (15 a 30 años) sexualmente activos con múltiples parejas. Modo de transmisión autoinoculativo desde secreciones genitales infectadas. Si un recién nacido pasa por canal de parto infectado desarrolla oftalmía neonatorum tracomatosa a los 5-14 días.",
+                vision: "Normal.",
+                pupila: "Normal.",
+                dolor: "Leve e insidioso, ardor resistente a tratamiento antibiótico tópico convencional por semanas/meses.",
+                laterality: "Unilateral de inicio que frecuentemente se hace bilateral asimétrico.",
+                comorbilidades: "Uretritis no gonocócica (secreción uretral matutina escasa en hombres), cervicitis crónica silente (en mujeres), y riesgo de enfermedad pélvica inflamatoria (EPI).",
+                tratamiento: `
+                    <p class="font-bold text-amber-700 mb-1">Manejo Sistémico y Epidemiológico Obligatorio:</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Terapia Sistémica de Elección:</strong> Azitromicina 1 gramo VO en monodosis única observada (Tratamiento preferencial GPC) O bien Doxiciclina 100 mg VO cada 12 hrs por 7 a 10 días (Contraindicado en embarazadas o niños).</li>
+                        <li><strong>Control de Foco:</strong> Es mandatorio localizar, evaluar y someter al mismo tratamiento antibiótico sistémico a la(s) pareja(s) sexual(es) del paciente, de lo contrario ocurre reinfección constante (efecto ping-pong).</li>
+                        <li><strong>Nota:</strong> Los colirios tópicos solos son ineficaces para erradicar el reservorio sistémico.</li>
+                    </ul>
+                `,
+                macroTitle: "Reacción folicular masiva en fórnix inferior",
+                macroDesc: "Ojo rojo crónico de más de 3 semanas sin respuesta a gotas comunes. Secreción mucopurulenta escasa pero constante. Presenta folículos gigantes de aspecto lechoso y brillante, muy predominantes en el fondo de saco conjuntival del párpado inferior, a veces con ganglio preauricular palpable.",
+                microTitle: "Cuerpos de inclusión de Halberstaedter-Prowazek",
+                microDesc: "La tinción de Giemsa del raspado conjuntival tarsal muestra el patognomónico infiltrado intracitoplasmático: cuerpos elementales infecciosos rodeando el núcleo de la célula epitelial huésped, con infiltrado estromal linfoide masivo."
+            },
+            {
+                id: 15,
+                name: "Conjuntivitis Alérgica (Atópica/Vernal)",
+                urgency: "Bajo",
+                imgMacroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Allergic_conjunctivitis_%28cropped%29.jpg/800px-Allergic_conjunctivitis_%28cropped%29.jpg", 
+                imgMicroUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Eosinophil_-_blood_smear.jpg/800px-Eosinophil_-_blood_smear.jpg",
+                definition: "Proceso inflamatorio bilateral dependiente de una reacción de hipersensibilidad mediada por IgE (Tipo 1 de Gell-Coombs), desencadenada por la degranulación masiva de mastocitos tras contacto con neumoalergenos (polvo, ácaros, polen).",
+                epi: "Afecta hasta el 20-30% de la población general. Picos etarios pediátricos y en primavera/otoño (forma estacional intermitente). La variante Vernal afecta severamente a niños varones en climas cálidos. La queratoconjuntivitis atópica afecta a adultos con eczema.",
+                vision: "Conservada.",
+                pupila: "Normal.",
+                dolor: "Sin dolor; su síntoma estelar indiscutible es el **PRURITO INTENSO (Comezón desesperante)**. Frotamiento ocular continuo.",
+                laterality: "Siempre Bilateral (simétrico).",
+                comorbilidades: "Tríada atópica: Rinitis alérgica estacional, Asma bronquial, Dermatitis atópica eccematosa. Mayor riesgo de desarrollo de Queratocono si existe frotamiento vigoroso y crónico de la córnea infantil.",
+                tratamiento: `
+                    <p class="font-bold text-emerald-700 mb-1">Manejo de Degranulación de Mastocitos (GPC):</p>
+                    <ul class="list-disc pl-4 space-y-1">
+                        <li><strong>Primera Línea (Tópicos Duales):</strong> Olopatadina 0.1% / 0.2% o Ketotifeno 0.025% (Acción antihistamínica H1 rápida + estabilización de membrana del mastocito a largo plazo). Una gota c/12h o c/24h.</li>
+                        <li><strong>Manejo del prurito:</strong> Prohibir estrictamente rascarse los ojos. Utilizar compresas frías en parpados y lubricantes conservados en el refrigerador (el frío genera vasoconstricción y alivio sintomático rápido).</li>
+                        <li><strong>Apoyo sistémico:</strong> Antihistamínicos orales (Loratadina 10mg / Cetirizina) si cursa concomintantemente con crisis de rinitis alérgica.</li>
+                    </ul>
+                `,
+                macroTitle: "Quemosis gelatinosa translúcida y papilas tarsales",
+                macroDesc: "Marcado edema de la conjuntiva de aspecto lechoso-gelatinoso pálido (Quemosis severa). Secreción en hebras mucoides blancas y elásticas. Al evertir los párpados superiores se evidencian múltiples excrecencias vasculares con un vaso central, que en casos crónicos forman un patrón de 'empedrado' de papilas gigantes en la conjuntiva tarsal superior.",
+                microTitle: "Infiltración estromal de Eosinófilos e Histamina",
+                microDesc: "Estructuras papilares conjuntivales conformadas por un eje vascular y estromal fibrinoso densamente infiltrado por eosinófilos bilobulados, mastocitos degranulados y escasos linfocitos. Vasodilatación mediada por histamina."
+            }
+        ];
+
+        // Estructura del Árbol de Triage Avanzado (Añadidas Red Flags)
+        const decisionTreeNodes = {
+            inicio: {
+                question: "EVALUACIÓN INICIAL DE RED FLAGS: ¿El paciente presenta alguno de los siguientes datos cardinales de urgencia extrema?",
+                desc: "Debemos descartar de inmediato emergencias que causan ceguera o comprometen la vida neurológicamente.",
+                options: [
+                    { text: "Sí, presenta proptosis (ojo saltado) y dolor intenso al mover el ojo", next: "diagnostico_orbitaria" },
+                    { text: "Sí, es postoperado ocular reciente (ej. catarata) o tuvo un trauma penetrante hace días", next: "diagnostico_endoftalmitis" },
+                    { text: "No presenta datos de proptosis, limitación al movimiento, ni cirugía intraocular reciente", next: "vision_afectada_eval" }
+                ]
+            },
+            vision_afectada_eval: {
+                question: "¿La agudeza visual del paciente se encuentra francamente disminuida?",
+                desc: "Pérdida de agudeza (que no mejora con agujero estenopeico) descarta habitualmente conjuntivitis simples.",
+                options: [
+                    { text: "Sí, la visión está marcadamente borrosa/reducida", next: "pupila_eval" },
+                    { text: "No, el paciente conserva una visión útil prácticamente normal", next: "vision_normal_eval" }
+                ]
+            },
+            pupila_eval: {
+                question: "Al evaluar la pupila del ojo enfermo, ¿presenta alguna de estas alteraciones anatómicas?",
+                desc: "Las disfunciones del esfínter o del epitelio nos dan el diagnóstico definitivo en el segmento anterior.",
+                options: [
+                    { text: "Midriasis media, paralizada (arreactiva a la luz) y córnea opaca esmerilada", next: "diagnostico_glaucoma" },
+                    { text: "Miosis (pupila pequeña reactiva) o irregular por adherencias (sinequias)", next: "diagnostico_uveitis" },
+                    { text: "Pupila normal e isocórica, pero se observa una mancha blanca purulenta en la córnea (infiltrado)", next: "diagnostico_ulcerabact" },
+                    { text: "Pupila normal, pero el dolor es extremadamente punzante, superficial, que tiñe con fluoresceína", next: "diagnostico_herpes" }
+                ]
+            },
+            vision_normal_eval: {
+                question: "¿La semiología se acompaña predominantemente de secreción palpebral/ocular?",
+                desc: "Si el ojo está rojo y no duele severamente ni pierde visión, evaluamos el exudado.",
+                options: [
+                    { text: "Sí, hay franca secreción ocular recurrente a lo largo del día", next: "secrecion_tipo_eval" },
+                    { text: "No hay exudado, el paciente presenta un ojo seco, mancha focal, u otro síntoma", next: "sin_secrecion_eval" }
+                ]
+            },
+            secrecion_tipo_eval: {
+                question: "¿Cuál es el aspecto característico o predominante de la secreción u ojo rojo?",
+                desc: "Clasificación etiológica empírica de conjuntivitis infecciosas.",
+                options: [
+                    { text: "Amanece con costras y secreción espesa, amarilla o verde (purulenta)", next: "diagnostico_bacteriana" },
+                    { text: "Secreción acuosa profusa (lágrima constante), ganglio preauricular palpable, antecede resfriado", next: "diagnostico_viral" },
+                    { text: "Evolución crónica tórpida (semanas), adulto joven sexualmente activo con folículos marcados", next: "diagnostico_chlamydia" }
+                ]
+            },
+            sin_secrecion_eval: {
+                question: "Finalmente, sin secreción infecciosa y con visión intacta, identifique el escenario clínico descriptivo que más concuerde:",
+                desc: "Descarte de vasculopatías benignas vs graves y patología alérgica/superficial.",
+                options: [
+                    { text: "El síntoma dominante absoluto es Comezón/Prurito intolerable y bilateral. Quemosis gelatinosa.", next: "diagnostico_alergica" },
+                    { text: "Masa blanca/amarilla o carnosa en forma triangular que invade la córnea temporal o nasalmente", next: "diagnostico_pterigion" },
+                    { text: "Placa rojo escarlata brillante sólida e indolora (como un derrame en la esclera blanca)", next: "diagnostico_hemorragia" },
+                    { text: "Mancha focal roja en cuña, molestia leve, que se BLANQUEA con la gota de fenilefrina", next: "diagnostico_epiescleritis" },
+                    { text: "Rojo oscuro/violáceo profundo, DOLOR insoportable al tacto, paciente Reumatológico, que NO blanquea con fenilefrina", next: "diagnostico_escleritis" },
+                    { text: "Ojo con hiperemia en el ecuador, sensación crónica de arenilla constante, prueba fluoresceína muestra punteado, y mejora al parpadear fuerte", next: "diagnostico_ojoseco" }
+                ]
+            },
+            // Nodos Finales
+            diagnostico_orbitaria: { isEnd: true, title: "Celulitis Orbitaria", urgency: "Crítico", pathologyId: 7, recommendation: "EMERGENCIA DE INGRESO HOSPITALARIO. Realice TAC de órbitas e inicie Ceftriaxona + Vanco IV." },
+            diagnostico_endoftalmitis: { isEnd: true, title: "Endoftalmitis Aguda", urgency: "Crítico", pathologyId: 6, recommendation: "EMERGENCIA VITREORRETINIANA. Requiere inyección intravítrea empírica (Vanco+Ceftazidima) inmediata." },
+            diagnostico_glaucoma: { isEnd: true, title: "Glaucoma Agudo de Ángulo Cerrado", urgency: "Crítico", pathologyId: 4, recommendation: "EMERGENCIA OFTALMOLÓGICA. Manitol IV o Acetazolamida de choque para deshidratar el ojo + Terapia tópica hipotensora masiva + Láser." },
+            diagnostico_ulcerabact: { isEnd: true, title: "Queratitis Bacteriana (Úlcera)", urgency: "Crítico", pathologyId: 3, recommendation: "RIESGO DE PERFORACIÓN. Tomar cultivos de córnea. Iniciar de manera horaria colirios antibióticos fortificados y suspender lentes de contacto." },
+            diagnostico_uveitis: { isEnd: true, title: "Uveítis Anterior Aguda", urgency: "Alto", pathologyId: 5, recommendation: "Inicie esteroides tópicos (Prednisolona) potentes y gotas ciclopléjicas para expandir la pupila (romper sinequias). Busque HLA-B27." },
+            diagnostico_escleritis: { isEnd: true, title: "Escleritis Anterior", urgency: "Alto", pathologyId: 11, recommendation: "Requiere corticoide sistémico agresivo e inmunosupresores por reumatología. Su alta destrucción tisular prohíbe las inyecciones perioculares." },
+            diagnostico_herpes: { isEnd: true, title: "Queratitis Herpética", urgency: "Alto", pathologyId: 13, recommendation: "Tinción muestra dendrita clásica. Recetar pomada de Aciclovir. PROHIBIDO prescribir cualquier fármaco que contenga dexametasona tópica." },
+            diagnostico_chlamydia: { isEnd: true, title: "Conjuntivitis de Inclusión", urgency: "Medio", pathologyId: 14, recommendation: "Tratamiento vía oral obligatoria (Azitromicina 1g DU). Evaluación de comorbilidades ITS y cita a la pareja sexual." },
+            diagnostico_bacteriana: { isEnd: true, title: "Conjuntivitis Bacteriana", urgency: "Bajo", pathologyId: 12, recommendation: "Colirios quinolónicos (Cipro/Moxifloxacino) 1 gota c/6h por una semana. Limpieza constante de detritus." },
+            diagnostico_viral: { isEnd: true, title: "Conjuntivitis Epidémica Viral", urgency: "Bajo", pathologyId: 2, recommendation: "Tratamiento de sostén: Hielo local, lágrimas artificiales, aislamiento laboral/escolar por riesgo de contagio masivo." },
+            diagnostico_alergica: { isEnd: true, title: "Conjuntivitis Alérgica", urgency: "Bajo", pathologyId: 15, recommendation: "Doble acción tópica (Olopatadina), paños fríos locales y medidas de aislamiento de alergenos ambientales." },
+            diagnostico_pterigion: { isEnd: true, title: "Pterigión Inflamado", urgency: "Bajo", pathologyId: 8, recommendation: "Gafas de sol polarizadas, lubricación extensa. Remisión quirúrgica sólo si compromete la visión o induce alto astigmatismo." },
+            diagnostico_hemorragia: { isEnd: true, title: "Hemorragia Subconjuntival", urgency: "Bajo", pathologyId: 1, recommendation: "Condición totalmente asintomática. Explicar el desvanecimiento cromático fisiológico a las 2 semanas. Medir T/A y vigilar frotamiento." },
+            diagnostico_epiescleritis: { isEnd: true, title: "Epiescleritis", urgency: "Bajo", pathologyId: 10, recommendation: "Patología leve confinada, AINEs tópicos (Diclofenaco) o fríos. Sin daño al estroma profundo. Evaluación sistémica si no remite en 3 semanas." },
+            diagnostico_ojoseco: { isEnd: true, title: "Queratoconjuntivitis Sicca", urgency: "Bajo", pathologyId: 9, recommendation: "Sustitutos lagrimales viscoelásticos (hialuronato libre de conservadores), higiene de párpados y corrección de hábitos de pantalla." }
+        };
+
+        const quizCases = [
+            {
+                id: 1,
+                story: "Masculino de 35 años, albañil. Acude por dolor intenso en ojo derecho, intolerancia a la luz (fotofobia), lágrima incontrolable. Refiere que ayer una rama de árbol le rozó el ojo, pero hoy despertó peor. A la lámpara de hendidura se observa una lesión blanquecina densa focal en la córnea, rodeada de inyección ciliar masiva y una línea de pus en el inferior del segmento anterior (hipopión).",
+                options: [
+                    { text: "Uveítis Anterior Idiopática", isCorrect: false, feedback: "Incorrecto. Aunque hay inyección ciliar e hipopión, el evento detonante fue un trauma vegetal en córnea que no causa uveítis primaria idiopática." },
+                    { text: "Úlcera Corneal Bacteriana/Micótica", isCorrect: true, feedback: "¡Exacto! El trauma con materia vegetal predispone fuertemente a una infección corneal infiltrativa purulenta (úlcera + hipopión). Requiere cultivos urgentes." },
+                    { text: "Glaucoma Agudo de Ángulo Cerrado", isCorrect: false, feedback: "Incorrecto. El glaucoma no forma abscesos o 'manchas blanquecinas' focales en la córnea tras traumatismos, sino un edema difuso esmerilado." },
+                    { text: "Endoftalmitis postraumática", isCorrect: false, feedback: "Técnicamente dudoso pero no primera línea: Una abrasión con rama es trauma contuso/cerrado superficial. Endoftalmitis exige una penetración total del globo o cirugía intraocular." }
+                ],
+                conduct: "Toma de frotis de la úlcera e instauración empírica inmediata de Vancomicina + Ceftazidima fortificadas tópicas horarias."
+            },
+            {
+                id: 2,
+                story: "Femenina de 68 años postoperada de extracción de catarata y colocación de LIO en OI hace 4 días sin eventualidades. Hoy acude a urgencias con caída abrupta de la visión a solo 'Percibir Movimientos de Mano'. Ojo extremadamente rojo, quemótico, con nivel purulento en cámara anterior. Al intentar ver el fondo de ojo, no hay reflejo rojo vivo pupilar, observándose una masa turbia blanco-amarillenta en el vítreo.",
+                options: [
+                    { text: "Conjuntivitis purulenta aguda (S. aureus)", isCorrect: false, feedback: "Incorrecto. La conjuntivitis es infección superficial y jamás genera pérdida aguda de reflejo vítreo ni disminuye la agudeza a movimientos de mano de manera tan drástica." },
+                    { text: "Uveítis Anterior Severa Típica", isCorrect: false, feedback: "Incorrecto. La temporalidad crítica (4to día postoperatorio) con vitritis en una adulta mayor grita infección endógena fulminante, no inflamación estéril." },
+                    { text: "Endoftalmitis Infecciosa Aguda", isCorrect: true, feedback: "¡Correcto! El cuadro clínico es un libro de texto de endoftalmitis aguda posquirúrgica secundaria usualmente a Staphylococcus coagulasa negativos o S. aureus." },
+                    { text: "Queratitis por Adenovirus (Epidémica)", isCorrect: false, feedback: "Incorrecto. El adenovirus causa inyección y secreción acuosa epidémica, no afecta las cámaras profundas del globo formando hipopión masivo y vitritis postoperatoria." }
+                ],
+                conduct: "Intervención de emergencia (Vitreorretina): Punción vítrea diagnóstica y aplicación empírica de inyecciones intravítreas de antibióticos (Vanco + Ceftazidima)."
+            },
+            {
+                id: 3,
+                story: "Escolar masculino de 8 años llevado por su madre refiriendo inflamación palpebral extrema derecha e inicio febril hace 3 días tras un cuadro de sinusitis previa. A la EF: El párpado está eritematoso impidiendo su apertura activa. Al abrirlo pasivamente se observa proptosis del globo ocular, inyección difusa y marcada limitación con dolor de los movimientos extraoculares.",
+                options: [
+                    { text: "Celulitis Orbitaria (Post-Septal)", isCorrect: true, feedback: "¡Brillante! El antecedente sinusal sumado al involucro de estructuras profundas del ojo (proptosis dolorosa y restricción muscular motora) diferencia clínicamente la peligrosa celulitis orbitaria de una mera infección preseptal." },
+                    { text: "Celulitis Preseptal", isCorrect: false, feedback: "Incorrecto. La celulitis preseptal es una inflamación puramente periorbitaria en la piel. No empuja el ojo hacia afuera (proptosis) ni limita ni duele la mirada extrínseca al estar detrás del septum." },
+                    { text: "Glaucoma Agudo Pediátrico", isCorrect: false, feedback: "Incorrecto. Raro en esta edad con fiebre, y no causa celulitis en la piel ni restricción motora masiva dependiente de origen sinusal." },
+                    { text: "Escleritis Bacteriana", isCorrect: false, feedback: "Incorrecto. La escleritis es típica de autoinmunidad del adulto (Wegener, AR). La sintomatología febril sinusal en niño indica diseminación del absceso orbitario." }
+                ],
+                conduct: "Ingreso inmediato, Tomografía (TC) de órbitas contrastada y esquema dual intravenoso antibiótico empírico. IC urgente con ORL."
+            },
+            {
+                id: 4,
+                story: "Mujer de 55 años, con diagnóstico prolongado de Artritis Reumatoide activa tratada de forma irregular. Acude de urgencia por un dolor unilateral ojo izquierdo que clasifica en 10/10, referido como una punzada de taladro que no la dejó dormir. La EF revela manchas de un fuerte color purpúrico o azul violáceo en la esclera temporal, engrosamiento nodular adyacente que, a pesar de aplicación de una gota simpaticomimética blanca capilar, persiste exactamente igual.",
+                options: [
+                    { text: "Hemorragia Subconjuntival Sectorial", isCorrect: false, feedback: "Incorrecto. Esta patología jamás duele. La paciente tiene dolor insoportable y el color rojo es vivo, no violáceo profundo nodular." },
+                    { text: "Epiescleritis Nodular", isCorrect: false, feedback: "Incorrecto. La epiescleritis responde inmediatamente constriñéndose y blanqueando con fenilefrina tópica, además cursa con molestia sorda pero rara vez duele al nivel de despertar al paciente por la noche." },
+                    { text: "Escleritis Anterior (Posible necrotizante)", isCorrect: true, feedback: "¡Perfecto! Dolor 'taladrante' nocturno en artritis reumatoide, tinte azul-violáceo y falla al blanqueamiento de fenilefrina es diagnóstico clínico patognomónico de escleritis." },
+                    { text: "Ataque Agudo Glaucoma", isCorrect: false, feedback: "Incorrecto. Dolor intenso sí, pero en el glaucoma la córnea se edematiza difusamente (se opaca) y la pupila está dilatada fija; aquí se focaliza a la pared escleral nodular." }
+                ],
+                conduct: "Derivación con Reumatología, tratamiento urgente sistémico con corticoides alta dosis vía oral o intravenosa e inmunosupresión biológica si es necrotizante."
+            },
+            {
+                id: 5,
+                story: "Joven universitario de 20 años en pleno mes de mayo. Consulta médica general por ambos ojos insoportablemente enrojecidos. Interrogatorio: el paciente no puede dejar de rascarse ('me quiero arrancar los ojos de la comezón'), sin secreción purulenta. Físicamente: edema conjuntival lechoso severo (quemosis) en ambos ojos y estornudos frecuentes.",
+                options: [
+                    { text: "Queratitis Punteada Herpética", isCorrect: false, feedback: "Incorrecto. El herpes suele ser estrictamente unilateral (98%) y el síntoma capital es la fotofobia extrema y el ardor corrosivo, no la comezón insoportable." },
+                    { text: "Conjuntivitis Estacional Alérgica", isCorrect: true, feedback: "¡Acertado! Temporalidad primavera, bilateralidad, antecedente rinosinusal estornudos, y especialmente el 'PRURITO' severo con quemosis gelatinosa dictan hipersensibilidad tipo 1." },
+                    { text: "Conjuntivitis por Adenovirus", isCorrect: false, feedback: "Incorrecto. Aunque el adenovirus da quemosis, suele presentar un lagrimeo acuoso intenso e inyección primero en un ojo y días después al otro, además del signo linfoide preauricular, pero no cursa con un prurito tan exasperante." },
+                    { text: "Infección gonocócica (Bacteriana hiperaguda)", isCorrect: false, feedback: "Incorrecto. Daría cantidades masivas y continuas de secreción purulenta de rápida evolución que rebosaría por la hendidura y que requiere lavado continuo. Aquí no existe secreción espesa." }
+                ],
+                conduct: "Prescribir olopatadina o ketotifeno en colirio (Antihistamínico + estabilizador), recomendar paños ultra fríos en párpados cerrados y derivar de la fuente alergénica."
+            }
+        ];
+
+        let activePathologyIndex = 0;
+        let activeVisualView = 'macro'; 
+        let currentTreeState = 'inicio';
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizAnswersSubmitted = 0;
+        let currentPhenPatient = 'paciente-A'; 
+        let currentFluorCase = 'caso-herpes'; 
+        let hasPhenDrop = false;
+        let hasFluor = false;
+        let isCobaltOn = false;
+
+        window.onload = function() {
+            lucide.createIcons();
+            loadPatologiaList();
+            renderActivePathology();
+            resetDecisionTree();
+            loadQuizCase();
+            buildMatrixTable();
+            setupVirtualLab();
+        };
+
+        function loadPatologiaList() {
+            const container = document.getElementById('patologia-list');
+            container.innerHTML = '';
+            patologias.forEach((pat, index) => {
+                const button = document.createElement('button');
+                button.className = `w-full text-left p-3.5 rounded-2xl transition-all duration-200 border flex items-center justify-between gap-3 ${
+                    index === activePathologyIndex 
+                    ? 'bg-slate-900 text-white border-transparent shadow-lg scale-[1.02]' 
+                    : 'bg-white hover:bg-emerald-50 text-slate-700 border-slate-200 hover:border-emerald-200'
+                }`;
+                button.onclick = () => selectPathology(index);
+                
+                let badgeStyle = 'bg-slate-100 text-slate-600 border border-slate-200';
+                if (pat.urgency === 'Alto') badgeStyle = 'bg-amber-100 text-amber-800 border border-amber-200';
+                if (pat.urgency === 'Crítico') badgeStyle = 'bg-rose-100 text-rose-800 border border-rose-200';
+
+                button.innerHTML = `
+                    <div class="overflow-hidden">
+                        <div class="font-bold text-xs truncate ${index === activePathologyIndex ? 'text-emerald-400' : 'text-slate-900'}">${pat.name}</div>
+                        <div class="text-[10px] ${index === activePathologyIndex ? 'text-slate-400' : 'text-slate-500'} truncate mt-1">${pat.vision}</div>
+                    </div>
+                    <span class="text-[9px] px-2 py-1 rounded-lg font-black shrink-0 uppercase tracking-wider shadow-sm ${badgeStyle}">${pat.urgency}</span>
+                `;
+                container.appendChild(button);
+            });
+        }
+
+        function filterPatologias() {
+            const query = document.getElementById('search-patologia').value.toLowerCase();
+            const buttons = document.getElementById('patologia-list').getElementsByTagName('button');
+            
+            patologias.forEach((pat, index) => {
+                const match = pat.name.toLowerCase().includes(query) || 
+                              pat.definition.toLowerCase().includes(query) ||
+                              pat.vision.toLowerCase().includes(query);
+                buttons[index].style.display = match ? 'flex' : 'none';
+            });
+        }
+
+        function selectPathology(index) {
+            activePathologyIndex = index;
+            loadPatologiaList();
+            renderActivePathology();
+        }
+
+        function renderActivePathology() {
+            const pat = patologias[activePathologyIndex];
+            
+            document.getElementById('p-name').innerText = pat.name;
+            document.getElementById('p-def').innerText = pat.definition;
+            document.getElementById('p-id').innerText = `OFT-${pat.id.toString().padStart(3, '0')}`;
+            
+            const urgencyBadge = document.getElementById('p-urgency');
+            const urgencyText = document.getElementById('p-urgency-text');
+            urgencyText.innerText = `Urgencia: ${pat.urgency}`;
+            
+            urgencyBadge.className = "inline-flex items-center gap-1.5 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider ";
+            if (pat.urgency === 'Bajo') urgencyBadge.classList.add('bg-emerald-100', 'text-emerald-800', 'border', 'border-emerald-200');
+            if (pat.urgency === 'Medio') urgencyBadge.classList.add('bg-blue-100', 'text-blue-800', 'border', 'border-blue-200');
+            if (pat.urgency === 'Alto') urgencyBadge.classList.add('bg-amber-100', 'text-amber-800', 'border', 'border-amber-200');
+            if (pat.urgency === 'Crítico') urgencyBadge.classList.add('bg-rose-100', 'text-rose-800', 'border', 'border-rose-200', 'animate-pulse');
+
+            document.getElementById('p-vision').innerText = pat.vision;
+            document.getElementById('p-pupila').innerText = pat.pupila;
+            document.getElementById('p-dolor').innerText = pat.dolor;
+            document.getElementById('p-curso').innerText = pat.laterality;
+            document.getElementById('p-comorbilidades').innerText = pat.comorbilidades;
+            document.getElementById('p-epi').innerText = pat.epi;
+            document.getElementById('p-tx').innerHTML = pat.tratamiento;
+
+            renderVisual();
+        }
+
+        function setVisualView(view) {
+            activeVisualView = view;
+            const btnMacro = document.getElementById('btn-view-macro');
+            const btnMicro = document.getElementById('btn-view-micro');
+            
+            if (view === 'macro') {
+                btnMacro.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-900 shadow-sm flex items-center gap-1.5";
+                btnMicro.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white flex items-center gap-1.5";
+            } else {
+                btnMicro.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-emerald-500 text-slate-900 shadow-sm flex items-center gap-1.5";
+                btnMacro.className = "px-4 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white flex items-center gap-1.5";
+            }
+            renderVisual();
+        }
+
+        function renderVisual() {
+            const pat = patologias[activePathologyIndex];
+            const renderContainer = document.getElementById('visual-render');
+            
+            renderContainer.innerHTML = '';
+
+            let currentTitle, currentDesc, currentImgUrl;
+
+            if (activeVisualView === 'macro') {
+                currentTitle = pat.macroTitle;
+                currentDesc = pat.macroDesc;
+                currentImgUrl = pat.imgMacroUrl;
+            } else {
+                currentTitle = pat.microTitle;
+                currentDesc = pat.microDesc;
+                currentImgUrl = pat.imgMicroUrl;
+            }
+
+            document.getElementById('visual-title').innerText = currentTitle;
+            document.getElementById('visual-desc').innerText = currentDesc;
+
+            if (currentImgUrl && currentImgUrl.trim() !== "") {
+                const imgElement = document.createElement('img');
+                imgElement.src = currentImgUrl;
+                imgElement.alt = currentTitle;
+                imgElement.className = "w-full h-full object-cover shadow-2xl transition-all duration-300 transform hover:scale-105 cursor-crosshair";
+                imgElement.onerror = function() {
+                    // Fallback visual si el link no carga (muy útil en simuladores web)
+                    this.outerHTML = `
+                    <div class="w-full h-full flex flex-col items-center justify-center bg-slate-900 border border-slate-700 text-slate-500 p-6 text-center">
+                        <i data-lucide="image-off" class="w-10 h-10 mb-3 text-slate-600"></i>
+                        <span class="text-xs font-bold">Muestra Histológica / Clínica Reservada</span>
+                        <p class="text-[9px] mt-2 max-w-xs leading-relaxed">El modelo detallado descrito en los hallazgos es la base fundamental del diagnóstico. Referirse al texto de la derecha.</p>
+                    </div>`;
+                    lucide.createIcons();
+                };
+                renderContainer.appendChild(imgElement);
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center gap-2 whitespace-nowrap";
+            });
+            
+            const activeBtn = document.getElementById(`btn-tab-${tabId}`);
+            activeBtn.className = "tab-btn px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 bg-emerald-500 text-slate-900 shadow-sm flex items-center gap-2 whitespace-nowrap";
+        }
+
+        // =========================================================================
+        // LAB LOGIC (Modificado y pulido con SVGs)
+        // =========================================================================
+        function setupVirtualLab() {
+            selectPhenPatient('paciente-A');
+            selectFluorCase('caso-herpes');
+        }
+
+        function selectPhenPatient(patient) {
+            currentPhenPatient = patient;
+            hasPhenDrop = false;
+            
+            const btnA = document.getElementById('btn-patient-a');
+            const btnB = document.getElementById('btn-patient-b');
+            const renderOjo = document.getElementById('lab-phen-ojo');
+
+            if (patient === 'paciente-A') {
+                btnA.className = "p-2 border border-slate-800 rounded-xl text-xs font-bold bg-slate-800 text-white transition-all text-center";
+                btnB.className = "p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center";
+                document.getElementById('phen-result-text').innerText = "Caso Clínico Epiescleritis: Enrojecimiento sectorial recto.";
+                renderOjo.innerHTML = `
+                    <svg viewBox="0 0 100 100" class="w-full h-full max-w-[150px]">
+                        <circle cx="50" cy="50" r="45" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="18" fill="#0f172a"/>
+                        <!-- Vasos superficiales radiales rojos claros -->
+                        <g id="vasos-epiesclerales" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round">
+                            <path d="M 95 50 Q 80 48 68 50" />
+                            <path d="M 92 40 Q 80 43 66 45" />
+                            <path d="M 92 60 Q 80 57 66 55" />
+                        </g>
+                    </svg>
+                `;
+            } else {
+                btnB.className = "p-2 border border-slate-800 rounded-xl text-xs font-bold bg-slate-800 text-white transition-all text-center";
+                btnA.className = "p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center";
+                document.getElementById('phen-result-text').innerText = "Caso Clínico Escleritis: Enrojecimiento oscuro, profundo, entrelazado.";
+                renderOjo.innerHTML = `
+                    <svg viewBox="0 0 100 100" class="w-full h-full max-w-[150px]">
+                        <circle cx="50" cy="50" r="45" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="18" fill="#0f172a"/>
+                        <!-- Vasos esclerales profundos azul-violaceos entrecruzados -->
+                        <g id="vasos-esclerales" stroke="#701a75" stroke-width="3" fill="none" opacity="0.9" stroke-linecap="round">
+                            <path d="M 95 50 Q 85 40 70 50 T 55 85" />
+                            <path d="M 85 85 Q 75 60 70 50 T 80 20" />
+                        </g>
+                    </svg>
+                `;
+            }
+        }
+
+        function applyPhenDrop() {
+            hasPhenDrop = true;
+            const resultText = document.getElementById('phen-result-text');
+
+            if (currentPhenPatient === 'paciente-A') {
+                const vasos = document.getElementById('vasos-epiesclerales');
+                vasos.style.transition = "stroke 1.5s ease-out, stroke-width 1.5s ease-out";
+                vasos.setAttribute('stroke', '#fed7aa'); // Blanquea simulando vasoconstriccion alfa-agonista
+                vasos.setAttribute('stroke-width', '0.5'); 
+                resultText.innerHTML = `<span class="text-emerald-600 font-extrabold flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4"></i> BLANQUEAMIENTO POSITIVO (Epiescleritis)</span>`;
+            } else {
+                // Escleritis - No blanquea porque los receptores alfa1 fenilefrina no alcanzan las capas esclerales avasculares/profundas densas, y el vaso esta inmerso en fibrina necrótica.
+                resultText.innerHTML = `<span class="text-rose-600 font-extrabold flex items-center justify-center gap-1.5"><i data-lucide="alert-triangle" class="w-4 h-4"></i> SIN BLANQUEAMIENTO (Escleritis Anterior)</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        function selectFluorCase(c) {
+            currentFluorCase = c;
+            hasFluor = false;
+            isCobaltOn = false;
+            
+            document.getElementById('cobalt-layer').classList.add('hidden');
+            document.getElementById('btn-apply-cobalt').disabled = true;
+
+            const btnH = document.getElementById('btn-fluor-herpes');
+            const btnU = document.getElementById('btn-fluor-ulcera');
+            const renderOjo = document.getElementById('lab-fluor-ojo');
+
+            if (c === 'caso-herpes') {
+                btnH.className = "p-2 border border-slate-800 rounded-xl text-xs font-bold bg-slate-800 text-white transition-all text-center";
+                btnU.className = "p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center";
+                document.getElementById('fluor-result-text').innerText = "Instilar Fluoresceína e iluminar con Azul de Cobalto.";
+                renderOjo.innerHTML = `
+                    <svg viewBox="0 0 100 100" class="w-full h-full max-w-[150px]">
+                        <circle cx="50" cy="50" r="45" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="24" fill="#1e293b"/> <!-- Iris -->
+                        <path id="dendrita-fluor" d="M 40 40 Q 50 35 55 45 M 55 45 Q 60 55 50 60 M 55 45 Q 65 42 70 48 M 45 42 Q 40 50 45 55" stroke="rgba(255,255,255,0.1)" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="50" cy="50" r="24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/> <!-- Cornea overlay -->
+                    </svg>
+                `;
+            } else {
+                btnU.className = "p-2 border border-slate-800 rounded-xl text-xs font-bold bg-slate-800 text-white transition-all text-center";
+                btnH.className = "p-2 border border-slate-300 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-slate-100 transition-all text-center";
+                document.getElementById('fluor-result-text').innerText = "Usuario de LC. Instilar Fluoresceína e iluminar con Azul de Cobalto.";
+                renderOjo.innerHTML = `
+                    <svg viewBox="0 0 100 100" class="w-full h-full max-w-[150px]">
+                        <circle cx="50" cy="50" r="45" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+                        <circle cx="50" cy="50" r="24" fill="#334155"/>
+                        <circle id="ulcera-fluor" cx="60" cy="55" r="7" fill="rgba(255,255,255,0.2)"/>
+                        <!-- Hipopion simulado sutil -->
+                        <path d="M 32 62 Q 50 72 68 62 A 24 24 0 0 1 32 62" fill="rgba(255,255,255,0.3)"/>
+                    </svg>
+                `;
+            }
+        }
+
+        function toggleFluor() {
+            hasFluor = true;
+            document.getElementById('btn-apply-cobalt').disabled = false;
+            document.getElementById('fluor-result-text').innerHTML = "Solución naranja instilada en fórnix inferior. <strong>Proceda a activar Filtro Azul.</strong>";
+        }
+
+        function toggleCobalt() {
+            isCobaltOn = !isCobaltOn;
+            const cobaltLayer = document.getElementById('cobalt-layer');
+            const resultText = document.getElementById('fluor-result-text');
+
+            if (isCobaltOn) {
+                cobaltLayer.classList.remove('hidden');
+                
+                if (currentFluorCase === 'caso-herpes') {
+                    const dendrita = document.getElementById('dendrita-fluor');
+                    dendrita.setAttribute('stroke', '#22c55e'); 
+                    dendrita.setAttribute('stroke-width', '1.8'); 
+                    // Add terminal bulbs effect dynamically via simple circles for aesthetics
+                    resultText.innerHTML = `<span class="text-emerald-600 font-extrabold flex items-center justify-center gap-1"><i data-lucide="check-circle" class="w-4 h-4"></i> POSITIVO: Patrón Dendrítico Herpético</span>`;
+                } else {
+                    const ulcera = document.getElementById('ulcera-fluor');
+                    ulcera.setAttribute('fill', '#22c55e');
+                    resultText.innerHTML = `<span class="text-rose-600 font-extrabold flex items-center justify-center gap-1"><i data-lucide="alert-triangle" class="w-4 h-4"></i> POSITIVO: Infiltrado/Úlcera Bacteriana Redonda</span>`;
+                }
+            } else {
+                cobaltLayer.classList.add('hidden');
+                resultText.innerText = "Luz de excitación cobalto apagada.";
+            }
+            lucide.createIcons();
+        }
+
+        function resetDecisionTree() {
+            currentTreeState = 'inicio';
+            renderDecisionTreeNode();
+        }
+
+        function advanceDecisionTree(nextNode) {
+            currentTreeState = nextNode;
+            renderDecisionTreeNode();
+        }
+
+        function renderDecisionTreeNode() {
+            const node = decisionTreeNodes[currentTreeState];
+            const qContainer = document.getElementById('tree-question');
+            const bContainer = document.getElementById('tree-buttons');
+            
+            qContainer.innerHTML = '';
+            bContainer.innerHTML = '';
+
+            if (node.isEnd) {
+                const associatedPat = patologias.find(p => p.id === node.pathologyId);
+                let bgAlert = 'bg-slate-50 border-emerald-200 text-slate-800';
+                let tagAlert = 'text-emerald-700 bg-emerald-100';
+                if (node.urgency === 'Alto') {
+                    bgAlert = 'bg-slate-50 border-amber-300 text-slate-800';
+                    tagAlert = 'text-amber-800 bg-amber-100';
+                } else if (node.urgency === 'Crítico') {
+                    bgAlert = 'bg-rose-50/50 border-rose-300 text-slate-900';
+                    tagAlert = 'text-rose-800 bg-rose-100 animate-pulse';
+                }
+
+                qContainer.innerHTML = `
+                    <div class="p-6 md:p-8 rounded-2xl border-2 ${bgAlert} space-y-4 shadow-sm bg-white">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-sm ${tagAlert}">Alarma GPC: ${node.urgency}</span>
+                            <span class="text-[10px] text-slate-400 font-mono font-bold bg-slate-100 px-2 py-1 rounded-md">RESULTADO DIAGNÓSTICO</span>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900">${node.title}</h3>
+                        <p class="text-[13px] leading-relaxed font-semibold text-slate-600 border-l-4 border-slate-200 pl-4 py-1">${associatedPat ? associatedPat.definition : ''}</p>
+                        
+                        <div class="bg-slate-800 text-white p-5 rounded-xl mt-4 shadow-inner">
+                            <h4 class="text-[10px] font-black uppercase tracking-widest mb-2 flex items-center gap-1.5 text-emerald-400">
+                                <i data-lucide="zap" class="w-4 h-4"></i> Manejo Inmediato / Derivación
+                            </h4>
+                            <p class="text-sm font-medium leading-relaxed">${node.recommendation}</p>
+                        </div>
+                    </div>
+                `;
+
+                bContainer.innerHTML = `
+                    <button onclick="goToPathologyInExplorer(${node.pathologyId})" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition-all flex items-center justify-center gap-2 shadow-md">
+                        <i data-lucide="book-open-check" class="w-4 h-4"></i> Estudiar Detalles Clínicos
+                    </button>
+                    <button onclick="resetDecisionTree()" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Evaluar Otro Paciente
+                    </button>
+                `;
+            } else {
+                qContainer.innerHTML = `
+                    <div class="space-y-3">
+                        <span class="text-[10px] text-emerald-600 font-black uppercase tracking-widest bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100/50">Nódulo de Decisión Clínica</span>
+                        <h3 class="text-xl md:text-2xl font-black text-slate-900 leading-snug">${node.question}</h3>
+                        <p class="text-[13px] text-slate-500 font-medium leading-relaxed">${node.desc}</p>
+                    </div>
+                `;
+
+                node.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = "w-full text-left p-4 md:p-5 rounded-xl border-2 border-slate-200 bg-white hover:bg-slate-50 hover:border-emerald-300 text-[13px] font-bold text-slate-700 transition-all flex items-center justify-between group shadow-sm";
+                    btn.onclick = () => advanceDecisionTree(opt.next);
+                    btn.innerHTML = `
+                        <span class="pr-4 leading-relaxed">${opt.text}</span>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 group-hover:text-emerald-500 transition-all shrink-0"></i>
+                    `;
+                    bContainer.appendChild(btn);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        function goToPathologyInExplorer(id) {
+            const index = patologias.findIndex(p => p.id === id);
+            if (index !== -1) {
+                selectPathology(index);
+                switchTab('explorer');
+            }
+        }
+
+        function loadQuizCase() {
+            const cCase = quizCases[currentQuizIndex];
+            const container = document.getElementById('quiz-box');
+            
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md uppercase tracking-widest border border-emerald-100">Escenario Clínico #${cCase.id} de ${quizCases.length}</span>
+                        <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> Triage Level I-II</span>
+                    </div>
+                    <div class="bg-slate-50 p-5 md:p-6 rounded-2xl border-l-4 border-l-emerald-500 border-y border-r border-slate-200 text-[13px] md:text-sm leading-relaxed text-slate-800 font-medium shadow-inner">
+                        "${cCase.story}"
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-4" id="quiz-options">
+                    <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-100 pb-2">Seleccione su diagnóstico de sospecha clínica:</h4>
+                </div>
+
+                <div id="quiz-feedback" class="hidden p-5 rounded-xl border border-transparent shadow-sm text-sm leading-relaxed mt-4 transition-all duration-300"></div>
+            `;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            cCase.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-opt-btn w-full text-left p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[13px] font-bold text-slate-700 transition-all flex items-center gap-3";
+                btn.onclick = () => selectQuizAnswer(idx, opt.isCorrect, opt.feedback, cCase.conduct);
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-lg border border-slate-300 flex items-center justify-center text-[10px] shrink-0 font-black text-slate-500 bg-slate-100 font-mono shadow-inner">${String.fromCharCode(65 + idx)}</span>
+                    <span class="leading-snug">${opt.text}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function selectQuizAnswer(index, isCorrect, feedback, conduct) {
+            document.querySelectorAll('.quiz-opt-btn').forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+            });
+
+            const selectedBtn = document.querySelectorAll('.quiz-opt-btn')[index];
+            selectedBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            selectedBtn.classList.add('ring-2', 'ring-offset-1');
+
+            const feedbackDiv = document.getElementById('quiz-feedback');
+            feedbackDiv.classList.remove('hidden');
+
+            if (isCorrect) {
+                selectedBtn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900', 'ring-emerald-400');
+                selectedBtn.querySelector('span').classList.add('border-emerald-600', 'bg-emerald-600', 'text-white');
+                feedbackDiv.className = "p-5 rounded-2xl border-2 border-emerald-300 bg-emerald-50 text-emerald-900 text-[13px] leading-relaxed space-y-3 mt-4 shadow-sm";
+                feedbackDiv.innerHTML = `
+                    <div class="font-bold flex items-start gap-2.5 text-sm">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5"></i> 
+                        <span>${feedback}</span>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-emerald-100 shadow-sm">
+                        <strong class="uppercase text-[10px] text-emerald-700 block mb-1.5 tracking-wider flex items-center gap-1.5"><i data-lucide="activity" class="w-3.5 h-3.5"></i> Conducta Terapéutica GPC / Derivación:</strong> 
+                        <span class="font-medium text-slate-700">${conduct}</span>
+                    </div>
+                `;
+                
+                if (quizAnswersSubmitted <= currentQuizIndex) { quizScore++; }
+            } else {
+                selectedBtn.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900', 'ring-rose-400');
+                selectedBtn.querySelector('span').classList.add('border-rose-600', 'bg-rose-600', 'text-white');
+                feedbackDiv.className = "p-5 rounded-2xl border-2 border-rose-300 bg-rose-50 text-rose-900 text-[13px] leading-relaxed space-y-3 mt-4 shadow-sm";
+                feedbackDiv.innerHTML = `
+                    <div class="font-bold flex items-start gap-2.5 text-sm">
+                        <i data-lucide="x-circle" class="w-5 h-5 text-rose-600 shrink-0 mt-0.5"></i> 
+                        <span>${feedback}</span>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-rose-100 shadow-sm">
+                        <strong class="uppercase text-[10px] text-rose-700 block mb-1.5 tracking-wider flex items-center gap-1.5"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Corrección Diagnóstica:</strong> 
+                        <span class="font-medium text-slate-700">Recuerde evaluar la clínica completa. Revise este caso en el explorador oftalmológico.</span>
+                    </div>
+                `;
+            }
+
+            if (quizAnswersSubmitted <= currentQuizIndex) { quizAnswersSubmitted++; }
+
+            document.getElementById('quiz-score').innerText = `Puntuación: ${quizScore}/${quizAnswersSubmitted}`;
+
+            const actionBtn = document.createElement('button');
+            actionBtn.className = "mt-5 w-full md:w-auto md:ml-auto px-6 py-3 rounded-xl text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 transition-all flex items-center justify-center gap-2 shadow-md";
+            
+            if (currentQuizIndex < quizCases.length - 1) {
+                actionBtn.innerHTML = `Avanzar al siguiente Paciente <i data-lucide="arrow-right" class="w-4 h-4"></i>`;
+                actionBtn.onclick = () => {
+                    currentQuizIndex++;
+                    loadQuizCase();
+                };
+            } else {
+                actionBtn.innerHTML = `Terminar Turno y Reiniciar Banco <i data-lucide="rotate-ccw" class="w-4 h-4"></i>`;
+                actionBtn.onclick = () => {
+                    currentQuizIndex = 0;
+                    quizScore = 0;
+                    quizAnswersSubmitted = 0;
+                    document.getElementById('quiz-score').innerText = `Puntuación: 0/0`;
+                    loadQuizCase();
+                };
+            }
+            feedbackDiv.appendChild(actionBtn);
+            lucide.createIcons();
+        }
+
+        function buildMatrixTable() {
+            const tbody = document.getElementById('matrix-tbody');
+            tbody.innerHTML = '';
+            
+            patologias.forEach(pat => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-all duration-150 border-b border-slate-100";
+                
+                let badgeClass = 'bg-slate-100 text-slate-600 border border-slate-200';
+                if (pat.urgency === 'Alto') badgeClass = 'bg-amber-100 text-amber-800 border border-amber-200';
+                if (pat.urgency === 'Crítico') badgeClass = 'bg-rose-100 text-rose-800 border border-rose-200';
+
+                // Extract a snippet for matrix
+                const txSnippet = pat.tratamiento.substring(pat.tratamiento.indexOf("<li>"), pat.tratamiento.indexOf("</li>") + 5).replace(/<\/?(li|strong|p|ul)>/g, '').trim();
+
+                tr.innerHTML = `
+                    <td class="p-4 align-top">
+                        <div class="font-extrabold text-slate-900 text-xs mb-1">${pat.name}</div>
+                        <span class="text-[9px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider ${badgeClass}">${pat.urgency}</span>
+                    </td>
+                    <td class="p-4 text-[11px] font-semibold text-slate-700 align-top">${pat.macroTitle}</td>
+                    <td class="p-4 text-[11px] font-black text-slate-800 align-top bg-slate-50/50">${pat.vision}</td>
+                    <td class="p-4 text-[11px] font-medium text-slate-600 align-top">${pat.pupila}</td>
+                    <td class="p-4 text-[11px] font-bold text-slate-800 align-top bg-slate-50/50">${pat.dolor}</td>
+                    <td class="p-4 text-[11px] font-medium text-slate-600 align-top">
+                        ${pat.macroDesc.length > 80 ? pat.macroDesc.substring(0, 80) + '...' : pat.macroDesc}
+                    </td>
+                    <td class="p-4 text-[10px] leading-relaxed text-slate-700 font-medium align-top border-l border-slate-100">
+                        ${txSnippet}... <br> <button onclick="switchTab('explorer'); selectPathology(${patologias.indexOf(pat)})" class="text-emerald-600 font-bold mt-1 hover:underline">Ver Terapia Completa</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+```
